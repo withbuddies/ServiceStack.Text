@@ -181,6 +181,12 @@ namespace ServiceStack.Text.Common
 		 
 		public static void WriteProperties(TextWriter writer, object value)
 		{
+            if(value == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			if (typeof(TSerializer) == typeof(JsonTypeSerializer) && JsState.WritingKeyCount > 0)
 				writer.Write(JsWriter.QuoteChar);
 

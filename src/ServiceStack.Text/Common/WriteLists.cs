@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using ServiceStack.Text.Json;
 
 namespace ServiceStack.Text.Common
 {
@@ -172,6 +173,12 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteIEnumerable(TextWriter writer, object oValueCollection)
 		{
+            if(oValueCollection == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			WriteObjectDelegate toStringFn = null;
 
 			writer.Write(JsWriter.ListStartChar);
@@ -210,6 +217,12 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteGenericList(TextWriter writer, List<T> list)
 		{
+            if (list == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var ranOnce = false;
@@ -230,7 +243,11 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteGenericListValueType(TextWriter writer, List<T> list)
 		{
-			if (list == null) return; //AOT
+            if (list == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
 
 			writer.Write(JsWriter.ListStartChar);
 
@@ -247,12 +264,17 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteIList(TextWriter writer, object oList)
 		{
-			if (oList == null) return;
 			WriteGenericIList(writer, (IList<T>)oList);
 		}
 
 		public static void WriteGenericIList(TextWriter writer, IList<T> list)
 		{
+            if (list == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var ranOnce = false;
@@ -281,7 +303,11 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteGenericIListValueType(TextWriter writer, IList<T> list)
 		{
-			if (list == null) return; //AOT
+            if (list == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
 
 			writer.Write(JsWriter.ListStartChar);
 
@@ -298,12 +324,17 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteArray(TextWriter writer, object oArrayValue)
 		{
-			if (oArrayValue == null) return;
 			WriteGenericArray(writer, (T[])oArrayValue);
 		}
 
 		public static void WriteGenericArrayValueType(TextWriter writer, object oArray)
 		{
+            if (oArray == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var array = (T[])oArray;
@@ -320,6 +351,12 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteGenericArray(TextWriter writer, T[] array)
 		{
+            if (array == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var ranOnce = false;
@@ -335,12 +372,17 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteEnumerable(TextWriter writer, object oEnumerable)
 		{
-			if (oEnumerable == null) return;
 			WriteGenericEnumerable(writer, (IEnumerable<T>)oEnumerable);
 		}
 
 		public static void WriteGenericEnumerable(TextWriter writer, IEnumerable<T> enumerable)
 		{
+            if (enumerable == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var ranOnce = false;
@@ -355,6 +397,12 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteGenericEnumerableValueType(TextWriter writer, IEnumerable<T> enumerable)
 		{
+            if (enumerable == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var ranOnce = false;
@@ -377,6 +425,12 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteListString(ITypeSerializer serializer, TextWriter writer, List<string> list)
 		{
+            if (list == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var ranOnce = false;
@@ -396,6 +450,12 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteIListString(ITypeSerializer serializer, TextWriter writer, IList<string> list)
 		{
+            if (list == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var ranOnce = false;
@@ -409,14 +469,14 @@ namespace ServiceStack.Text.Common
 			writer.Write(JsWriter.ListEndChar);
 		}
 
-		public static void WriteBytes(ITypeSerializer serializer, TextWriter writer, object byteValue)
-		{
-			if (byteValue == null) return;
-			serializer.WriteBytes(writer, byteValue);
-		}
-
 		public static void WriteStringArray(ITypeSerializer serializer, TextWriter writer, object oList)
 		{
+            if (oList == null)
+            {
+                writer.Write(JsonUtils.Null);
+                return;
+            }
+
 			writer.Write(JsWriter.ListStartChar);
 
 			var list = (string[])oList;

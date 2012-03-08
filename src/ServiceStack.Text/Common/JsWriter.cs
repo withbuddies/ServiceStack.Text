@@ -211,7 +211,7 @@ namespace ServiceStack.Text.Common
             if (typeof(T).IsArray)
             {
                 if (typeof(T) == typeof(byte[]))
-                    return (w, x) => WriteLists.WriteBytes(Serializer, w, x);
+                    return WriteListsOfElements<byte, TSerializer>.WriteGenericArrayValueType;
 
                 if (typeof(T) == typeof(string[]))
                     return (w, x) => WriteLists.WriteStringArray(Serializer, w, x);

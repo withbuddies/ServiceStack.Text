@@ -5,7 +5,7 @@ using ServiceStack.Text.Tests.DynamicModels;
 
 namespace ServiceStack.Text.Tests.JsonTests
 {
-	[TestFixture]
+    [TestFixture]
 	public class ModelWithAllTypesTests
 	{
 		[Test]

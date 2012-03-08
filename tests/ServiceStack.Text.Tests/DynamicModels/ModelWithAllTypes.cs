@@ -3,7 +3,7 @@ using ServiceStack.Text.Tests.DynamicModels.DataModel;
 
 namespace ServiceStack.Text.Tests.DynamicModels
 {
-	public class ModelWithAllTypes
+    public class ModelWithAllTypes
 	{
 		public Exception Exception { get; set; }
 

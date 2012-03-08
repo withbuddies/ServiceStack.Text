@@ -124,11 +124,11 @@ namespace ServiceStack.Text.Json
 			WriteRawString(writer, ((Guid)oValue).ToString("N"));
 		}
 
-		public void WriteBytes(TextWriter writer, object oByteValue)
-		{
-			if (oByteValue == null) return;
-			WriteRawString(writer, Convert.ToBase64String((byte[])oByteValue));
-		}
+        //public void WriteBytes(TextWriter writer, object oByteValue)
+        //{
+        //    if (oByteValue == null) return;
+        //    WriteRawString(writer, Convert.ToBase64String((byte[])oByteValue));
+        //}
 
 		public void WriteChar(TextWriter writer, object charValue)
 		{

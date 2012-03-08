@@ -23,7 +23,7 @@ namespace ServiceStack.Text.Common
 		void WriteNullableDateTime(TextWriter writer, object dateTime);
 		void WriteGuid(TextWriter writer, object oValue);
 		void WriteNullableGuid(TextWriter writer, object oValue);
-		void WriteBytes(TextWriter writer, object oByteValue);
+		//void WriteBytes(TextWriter writer, object oByteValue);
 		void WriteChar(TextWriter writer, object charValue);
 		void WriteByte(TextWriter writer, object byteValue);
 		void WriteInt16(TextWriter writer, object intValue);

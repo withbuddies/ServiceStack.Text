@@ -334,8 +334,8 @@ namespace ServiceStack.Text.Tests
 		{
 			var byteArrayValue = new byte[] { 0, 65, 97, 255, };
 			var stringValue = JsonSerializer.SerializeToString(byteArrayValue);
-			var expectedString = Convert.ToBase64String(byteArrayValue);
-			Assert.That(stringValue, Is.EqualTo('"' + expectedString + '"'));
+			var expectedString = "[0,65,97,255]";
+			Assert.That(stringValue, Is.EqualTo( expectedString));
 		}
 
 		[Test]
@@ -343,7 +343,7 @@ namespace ServiceStack.Text.Tests
 		{
 			var byteArrayValue = new byte[] { 0, 65, 97, 255, };
 			var stringValue = TypeSerializer.SerializeToString(byteArrayValue);
-			var expectedString = Convert.ToBase64String(byteArrayValue);
+			var expectedString = "[0,65,97,255]";
 			Assert.That(stringValue, Is.EqualTo(expectedString));
 		}
 

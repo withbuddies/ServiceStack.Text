@@ -149,8 +149,8 @@ namespace ServiceStack.Text.Common
 
 			if (type == typeof(string[]))
 				return ParseStringArray;
-			if (type == typeof(byte[]))
-				return ParseByteArray;
+			//if (type == typeof(byte[]))
+			//	return ParseByteArray;
 
 			var elementType = type.GetElementType();
 			var elementParseFn = Serializer.GetParseFn(elementType);

@@ -40,7 +40,7 @@ namespace ServiceStack.Text.Tests
 		{
 			var test = new { Name = "Test", Data = new byte[] { 1, 2, 3, 4, 5 } };
 			var json = JsonSerializer.SerializeToString(test);
-			Assert.That(json, Is.EquivalentTo("{\"Name\":\"Test\",\"Data\":\"AQIDBAU=\"}"));
+			Assert.That(json, Is.EquivalentTo("{\"Name\":\"Test\",\"Data\":[1,2,3,4,5]}"));
 		}
 
 		[Test]
