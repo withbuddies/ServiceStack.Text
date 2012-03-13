@@ -52,8 +52,10 @@ namespace ServiceStack.Text.Common
 
 			if (typeof(T) == typeof(Guid))
 				return value => new Guid(value);
-			if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(DateTime?))
+			if (typeof(T) == typeof(DateTime))
 				return value => DateTimeSerializer.ParseShortestXsdDateTime(value);
+            if(typeof(T) == typeof(DateTime?))
+                return value => value == null ? null : (DateTime?)DateTimeSerializer.ParseShortestXsdDateTime(value);
 			if (typeof(T) == typeof(TimeSpan))
 				return value => TimeSpan.Parse(value);
 #if !MONOTOUCH && !SILVERLIGHT && !XBOX

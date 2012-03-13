@@ -50,6 +50,9 @@ namespace ServiceStack.Text.Tests.JsonTests
             Assert.IsNull(m2.ArrayValue);
             Assert.IsNull(m2.NestedTypeValue);
             Assert.IsNull(m2.ByteArrayValue);
+            Assert.IsNull(m2.DateTimeValue);
         }
+
+
     }
 }

@@ -22,6 +22,7 @@ namespace ServiceStack.Text.Tests.DynamicModels
         public byte[] ByteArrayValue { get; set; }
         public MyEnum? EnumValue { get; set; }
         public NestedType NestedTypeValue { get; set; }
+        public DateTime? DateTimeValue { get; set; }
 
         public static ModelWithComplexTypes Create(int i)
         {
