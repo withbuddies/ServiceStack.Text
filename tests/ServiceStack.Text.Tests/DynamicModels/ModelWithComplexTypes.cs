@@ -17,6 +17,7 @@ namespace ServiceStack.Text.Tests.DynamicModels
         }
 
         public IList<string> ListValue { get; set; }
+        public List<ModelWithComplexTypes> ConcreteListValue { get; set; }
         public IDictionary<string, string> DictionaryValue { get; set; }
         public string[] ArrayValue { get; set; }
         public byte[] ByteArrayValue { get; set; }

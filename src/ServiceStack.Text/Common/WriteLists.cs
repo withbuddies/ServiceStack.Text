@@ -211,7 +211,12 @@ namespace ServiceStack.Text.Common
 
 		public static void WriteList(TextWriter writer, object oList)
 		{
-			if (oList == null) return;
+			if (oList == null)
+			{
+                writer.Write(JsonUtils.Null);
+			    return;
+			}
+
 			WriteGenericIList(writer, (IList<T>)oList);
 		}
 

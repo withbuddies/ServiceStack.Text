@@ -1,3 +1,5 @@
+using System;
+using System.Web.Script.Serialization;
 using NUnit.Framework;
 using ServiceStack.Text.Tests.DynamicModels;
 
@@ -11,7 +13,9 @@ namespace ServiceStack.Text.Tests.JsonTests
         {
             var m1 = ModelWithComplexTypes.Create(1);
             var s = JsonSerializer.SerializeToString(m1);
-            var m2 = JsonSerializer.DeserializeFromString<ModelWithComplexTypes>(s);
+            Console.WriteLine(s);
+
+            var m2 = new JavaScriptSerializer().Deserialize<ModelWithComplexTypes>(s);
 
             Assert.AreEqual(m1.ListValue[0], m2.ListValue[0]);
             Assert.AreEqual(m1.DictionaryValue["a"], m2.DictionaryValue["a"]);
@@ -25,11 +29,14 @@ namespace ServiceStack.Text.Tests.JsonTests
 
             JsConfig.IncludeNullValues = false;
             var s = JsonSerializer.SerializeToString(m1);
-            var m2 = JsonSerializer.DeserializeFromString<ModelWithComplexTypes>(s);
+            Console.WriteLine(s);
+
+            var m2 = new JavaScriptSerializer().Deserialize<ModelWithComplexTypes>(s);
             JsConfig.Reset();
 
             Assert.IsNull(m2.DictionaryValue);
             Assert.IsNull(m2.ListValue);
+            Assert.IsNull(m2.ConcreteListValue);
             Assert.IsNull(m2.ArrayValue);
             Assert.IsNull(m2.NestedTypeValue);
             Assert.IsNull(m2.ByteArrayValue);
@@ -42,7 +49,9 @@ namespace ServiceStack.Text.Tests.JsonTests
 
             JsConfig.IncludeNullValues = true;
             var s = JsonSerializer.SerializeToString(m1);
-            var m2 = JsonSerializer.DeserializeFromString<ModelWithComplexTypes>(s);
+            Console.WriteLine(s);
+
+            var m2 = new JavaScriptSerializer().Deserialize<ModelWithComplexTypes>(s);
             JsConfig.Reset();
 
             Assert.IsNull(m2.DictionaryValue);
