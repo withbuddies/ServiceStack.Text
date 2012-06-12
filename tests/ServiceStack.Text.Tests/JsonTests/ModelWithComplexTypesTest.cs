@@ -8,6 +8,27 @@ namespace ServiceStack.Text.Tests.JsonTests
     [TestFixture]
     public class ModelWithComplexTypesTest
     {
+        private class HasDate
+        {
+            public DateTime Date { get; set; }
+        }
+        
+        [Test]
+        public void CanSerializeOddDate()
+        {
+            var dt = new DateTime(2012, 3, 25, 1, 30, 0, 0, DateTimeKind.Unspecified);
+
+            TimeZoneInfo.ConvertTimeToUtc(dt);
+
+            var entity = new HasDate {Date = dt};
+
+            var json = JsonSerializer.SerializeToString(entity);
+
+            var fromJson = new JavaScriptSerializer().Deserialize<HasDate>(json);
+
+            Assert.AreEqual(fromJson.Date, entity.Date);
+        }
+
         [Test]
         public void Can_Serialize()
         {

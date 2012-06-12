@@ -249,8 +249,15 @@ namespace ServiceStack.Text.Json
 		public void WriteEnumFlags(TextWriter writer, object enumFlagValue)
 		{
 			if (enumFlagValue == null) return;
-			var intVal = (int)enumFlagValue;
-			writer.Write(intVal);
+            try
+            {
+                var enumType = Enum.GetUnderlyingType(enumFlagValue.GetType()); 
+                writer.Write(Convert.ChangeType(enumFlagValue, enumType));
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Unable to coerce " + enumFlagValue + " to int.", ex);
+            }
 		}
 
 		public void WriteLinqBinary(TextWriter writer, object linqBinaryValue)
