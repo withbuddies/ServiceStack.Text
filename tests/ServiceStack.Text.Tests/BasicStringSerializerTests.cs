@@ -579,5 +579,65 @@ namespace ServiceStack.Text.Tests
 			Assert.That(toModel, Is.EquivalentTo(model));
 		}
 
+        [Test]
+        public void CanParseHigherOrderUnicode()
+        {
+            var json = "{\"X\":\"\\uD835\\uDC00\"}";
+            var x = JsonSerializer.DeserializeFromString<StringContainer>(json);
+            Assert.AreEqual("\uD835\uDC00", x.X);
+        }
+
+        [Test]
+        public void CanParserStringsThatContainEscapedQuotes()
+        {
+            var json = "{\"X\":\"hello \\\"mike\\\"\"}";
+            var x = JsonSerializer.DeserializeFromString<StringContainer>(json);
+            Assert.AreEqual("hello \"mike\"", x.X);
+        }
+
+        [Test]
+        public void CanParseNullLiteral()
+        {
+            var json = "{\"X\":null}";
+            var x = JsonSerializer.DeserializeFromString<StringContainer>(json);
+            Assert.AreEqual(null, x.X);
+        }
+
+        [Test]
+        public void CanParseNullLiteralWithWhitespace()
+        {
+            var json = "{\"X\":   null}";
+            var x = JsonSerializer.DeserializeFromString<StringContainer>(json);
+            Assert.AreEqual(null, x.X);
+        }
+
+        [Test]
+        public void CanParseEmptyStringWithWhitespace()
+        {
+            var json = "{\"X\":   \"\"}";
+            var x = JsonSerializer.DeserializeFromString<StringContainer>(json);
+            Assert.AreEqual("", x.X);
+        }
+
+        [Test]
+        public void CanParseEmptyString()
+        {
+            var json = "{\"X\":\"\"}";
+            var x = JsonSerializer.DeserializeFromString<StringContainer>(json);
+            Assert.AreEqual("", x.X);
+        }
+
+
+        [Test]
+        public void CanParseStringOfLiteralNull()
+        {
+            var json = "{\"X\":\"null\"}";
+            var x = JsonSerializer.DeserializeFromString<StringContainer>(json);
+            Assert.AreEqual("null", x.X);
+        }
+        public class StringContainer
+        {
+            public string X { get; set; }
+        }
 	}
 }

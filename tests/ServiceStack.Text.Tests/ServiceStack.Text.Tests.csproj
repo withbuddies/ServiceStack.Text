@@ -178,6 +178,7 @@
     <Compile Include="JsonTests\JsonDateTimeTests.cs" />
     <Compile Include="JsonTests\ModelWithComplexTypesTest.cs" />
     <Compile Include="JsonTests\PolymorphicListTests.cs" />
+    <Compile Include="JsonTests\StringParsingTests.cs" />
     <Compile Include="JsvTests\JsvDeserializeTypeTest.cs" />
     <Compile Include="MessagingTests.cs" />
     <Compile Include="NullableTypesTests.cs" />

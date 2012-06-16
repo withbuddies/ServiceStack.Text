@@ -11,9 +11,11 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using ServiceStack.Text.Common;
 
 namespace ServiceStack.Text.Json
@@ -291,98 +293,82 @@ namespace ServiceStack.Text.Json
 			return string.IsNullOrEmpty(value) ? value : ParseRawString(value);
 		}
 
-		static readonly char[] IsSafeJsonChars = new[] { JsonUtils.QuoteChar, JsonUtils.EscapeChar };
+	    private static readonly char[] IsSafeJsonChars = new[] {JsonUtils.QuoteChar, JsonUtils.EscapeChar};
 
-		internal static string ParseJsonString(string json, ref int index)
-		{
-			var jsonLength = json.Length;
+        internal static string ParseJsonString(string json, ref int index)
+        {
+            var jsonLength = json.Length;
 
-			for (; index < json.Length; index++) { var ch = json[index]; if (ch >= WhiteSpaceFlags.Length || !WhiteSpaceFlags[ch]) break; } //Whitespace inline
+            for (; index < json.Length; index++)
+            {
+                var ch = json[index];
+                if (ch >= WhiteSpaceFlags.Length || !WhiteSpaceFlags[ch]) break;
+            } //Whitespace inline
 
-			if (json[index] == JsonUtils.QuoteChar)
-			{
-				index++;
+            if (json[index] == JsonUtils.QuoteChar)
+            {
+                index++;
 
-				//MicroOp: See if we can short-circuit evaluation (to avoid StringBuilder)
-				var strEndPos = json.IndexOfAny(IsSafeJsonChars, index);
-				if (strEndPos == -1) return json.Substring(index, jsonLength - index);
-				if (json[strEndPos] == JsonUtils.QuoteChar)
-				{
-					var potentialValue = json.Substring(index, strEndPos - index);
-					index = strEndPos + 1;
-					return potentialValue;
-				}
-			}
+                //MicroOp: See if we can short-circuit evaluation (to avoid StringBuilder)
+                var strEndPos = json.IndexOfAny(IsSafeJsonChars, index);
+                if (strEndPos == -1) return json.Substring(index, jsonLength - index);
+                if (json[strEndPos] == JsonUtils.QuoteChar)
+                {
+                    var potentialValue = json.Substring(index, strEndPos - index);
+                    index = strEndPos + 1;
+                    return potentialValue;
+                }
 
-			var sb = new StringBuilder(jsonLength);
-			char c;
 
-			while (true)
-			{
-				if (index == jsonLength) break;
+                //main line
+                int stringEnd = index;
+                for (;; stringEnd++)
+                {
+                    //skip over escaped chars
+                    if (json[stringEnd] == '\\')
+                    {
+                        stringEnd++;
+                        continue;
+                    }
 
-				c = json[index++];
-				if (c == JsonUtils.QuoteChar) break;
+                    //never found an end
+                    if (stringEnd == json.Length)
+                    {
+                        throw new Exception("Cannot find end of json string.");
+                    }
 
-				if (c == '\\')
-				{
+                    //
+                    if (json[stringEnd] == '"')
+                    {
+                        break;
+                    }
+                }
 
-					if (index == jsonLength)
-					{
-						break;
-					}
-					c = json[index++];
-					switch (c)
-					{
-						case '"':
-							sb.Append('"');
-							break;
-						case '\\':
-							sb.Append('\\');
-							break;
-						case '/':
-							sb.Append('/');
-							break;
-						case 'b':
-							sb.Append('\b');
-							break;
-						case 'f':
-							sb.Append('\f');
-							break;
-						case 'n':
-							sb.Append('\n');
-							break;
-						case 'r':
-							sb.Append('\r');
-							break;
-						case 't':
-							sb.Append('\t');
-							break;
-						case 'u':
-							var remainingLength = jsonLength - index;
-							if (remainingLength >= 4)
-							{
-								var unicodeString = json.Substring(index, 4);
-								var unicodeIntVal = UInt32.Parse(unicodeString, NumberStyles.HexNumber);
-								sb.Append(ConvertFromUtf32((int)unicodeIntVal));
-								index += 4;
-							}
-							else
-							{
-								break;
-							}
-							break;
-					}
-				}
-				else
-				{
-					sb.Append(c);
-				}
-			}
-
-			var strValue = sb.ToString();
-			return strValue == JsonUtils.Null ? null : strValue;
-		}
+                var value = Regex.Unescape(json.Substring(index, stringEnd - index));
+                index = stringEnd + 1;
+                return value;
+            }
+            else
+            {
+                if (jsonLength - index >= 4 && json.Substring(index, 4) == JsonUtils.Null)
+                {
+                    index += 4;
+                    return null;
+                }
+                else if (jsonLength - index >= 1 && json[index] == '}')
+                {
+                    //horible edge case caused by bad code upstream.
+                    //handles case of {"a":1, "b":2,}
+                    //which i actually think is invalid json... :(
+                    index++;
+                    return "}";
+                }
+                else
+                {
+                    throw new Exception("Unexpected charicter at position " + index + ": " + json[index]);
+                }
+            }
+        }
 
 		/// <summary>
 		/// Since Silverlight doesn't have char.ConvertFromUtf32() so putting Mono's implemenation inline.
@@ -391,15 +377,14 @@ namespace ServiceStack.Text.Json
 		/// <returns></returns>
 		private static string ConvertFromUtf32(int utf32)
 		{
-			if (utf32 < 0 || utf32 > 0x10FFFF)
-				throw new ArgumentOutOfRangeException("utf32", "The argument must be from 0 to 0x10FFFF.");
-			if (0xD800 <= utf32 && utf32 <= 0xDFFF)
-				throw new ArgumentOutOfRangeException("utf32", "The argument must not be in surrogate pair range.");
-			if (utf32 < 0x10000)
-				return new string((char)utf32, 1);
-			utf32 -= 0x10000;
-			return new string(new[] {(char) ((utf32 >> 10) + 0xD800),
-                                (char) (utf32 % 0x0400 + 0xDC00)});
+            try
+            {
+                return Char.ConvertFromUtf32(utf32);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Failed to convert " + utf32 + " to UTF-16 string.", ex);    
+            }
 		}
 
 		private static void EatWhitespace(string json, ref int index)
