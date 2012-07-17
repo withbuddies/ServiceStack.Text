@@ -1,18 +1,48 @@
 using System;
+using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using NUnit.Framework;
 using ServiceStack.Text.Tests.DynamicModels;
 
 namespace ServiceStack.Text.Tests.JsonTests
 {
+    
+
     [TestFixture]
     public class ModelWithComplexTypesTest
     {
+        [Flags]
+        public enum FlagsEnum
+        {
+            A=1, B=2, C=3
+        }
+
+        public class HasDictOfFlagsToInt
+        {
+            public Dictionary<FlagsEnum, int> Dict { get; set; }
+        }
+
         private class HasDate
         {
             public DateTime Date { get; set; }
         }
         
+        [Test]
+        public void CanSerializeTypeWithDictOfFlags()
+        {
+            var instance = new HasDictOfFlagsToInt
+                               {
+                                   Dict = new Dictionary<FlagsEnum, int> {{FlagsEnum.A, 123}}
+                               };
+
+            var json = JsonSerializer.SerializeToString(instance);
+
+            var fromJson = new JavaScriptSerializer().Deserialize<HasDate>(json);
+
+            StringAssert.Contains("\"1\":123", json);
+            Assert.IsNotNull(fromJson );
+        }
+
         [Test]
         public void CanSerializeOddDate()
         {
