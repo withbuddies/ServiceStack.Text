@@ -198,6 +198,7 @@
     <Compile Include="Json\JsonWriter.Generic.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Json\StringEscaper.cs" />
     <Compile Include="JsvFormatter.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -20,7 +20,7 @@ using ServiceStack.Text.Common;
 
 namespace ServiceStack.Text.Json
 {
-	internal class JsonTypeSerializer
+    internal class JsonTypeSerializer
 		: ITypeSerializer
 	{
 		public static ITypeSerializer Instance = new JsonTypeSerializer();
@@ -344,7 +344,7 @@ namespace ServiceStack.Text.Json
                     }
                 }
 
-                var value = Regex.Unescape(json.Substring(index, stringEnd - index));
+                var value = StringEscaper.Unescape(json.Substring(index, stringEnd - index));
                 index = stringEnd + 1;
                 return value;
             }
