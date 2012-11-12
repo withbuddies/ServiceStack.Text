@@ -180,17 +180,22 @@ namespace ServiceStack.Text.Common
             }
 
 			WriteObjectDelegate toStringFn = null;
-
+		    Type lastType = null;
 			writer.Write(JsWriter.ListStartChar);
 
 			var valueCollection = (IEnumerable)oValueCollection;
 			var ranOnce = false;
 			foreach (var valueItem in valueCollection)
 			{
-				if (toStringFn == null)
-					toStringFn = Serializer.GetWriteFn(valueItem.GetType());
+			    var thisType = valueItem.GetType();
 
-				JsWriter.WriteItemSeperatorIfRanOnce(writer, ref ranOnce);
+                if (toStringFn == null || thisType != lastType)
+                {
+                    toStringFn = Serializer.GetWriteFn(thisType);
+                    lastType = thisType;
+                }
+
+			    JsWriter.WriteItemSeperatorIfRanOnce(writer, ref ranOnce);
 
 				toStringFn(writer, valueItem);
 			}
