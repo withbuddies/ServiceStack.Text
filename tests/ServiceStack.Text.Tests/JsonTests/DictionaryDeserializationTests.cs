@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using NUnit.Framework;
 
 namespace ServiceStack.Text.Tests.JsonTests
@@ -34,8 +35,6 @@ namespace ServiceStack.Text.Tests.JsonTests
 
             Assert.AreEqual("12", ((IDictionary)deserialized["ChildDict"])["age"]);
             Assert.AreEqual("mike", ((IDictionary)deserialized["ChildDict"])["name"]);
-
-            
         }
     }
 }

@@ -253,22 +253,13 @@ namespace ServiceStack.Text.Common
                 }
             }
 
-            var isCollection = typeof(T).IsOrHasGenericInterfaceTypeOf(typeof(ICollection));
-            if (isCollection)
+            var isDictionary = typeof(T).HasInterface(typeof(IDictionary));
+            if (isDictionary)
             {
-                var isDictionary = typeof(T).IsAssignableFrom(typeof(IDictionary))
-                    || typeof(T).HasInterface(typeof(IDictionary));
-                if (isDictionary)
-                {
-                    return WriteDictionary<TSerializer>.WriteIDictionary;
-                }
-
-                return WriteListsOfElements<TSerializer>.WriteIEnumerable;
+                return WriteDictionary<TSerializer>.WriteIDictionary;
             }
 
-            var isEnumerable = typeof(T).IsAssignableFrom(typeof(IEnumerable))
-                || typeof(T).HasInterface(typeof(IEnumerable));
-
+            var isEnumerable = typeof(T).HasInterface(typeof(IEnumerable));
             if (isEnumerable)
             {
                 return WriteListsOfElements<TSerializer>.WriteIEnumerable;

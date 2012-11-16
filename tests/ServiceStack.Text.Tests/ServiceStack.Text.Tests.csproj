@@ -177,6 +177,7 @@
     <Compile Include="CsvTests\CustomHeaderTests.cs" />
     <Compile Include="JsonTests\DictionaryDeserializationTests.cs" />
     <Compile Include="JsonTests\EnumTests.cs" />
+    <Compile Include="JsonTests\IDictionarySerializationTests.cs" />
     <Compile Include="JsonTests\JsonDateTimeTests.cs" />
     <Compile Include="JsonTests\ModelWithComplexTypesTest.cs" />
     <Compile Include="JsonTests\PolymorphicListTests.cs" />
