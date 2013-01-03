@@ -24,6 +24,20 @@ namespace ServiceStack.Text.Tests.JsonTests
 
             Assert.AreEqual("0", val);
         }
+
+        [Test]
+        public void CanSerializeNullableFlag()
+        {
+            FlagEnum? flag = null;
+
+            var val = JsonSerializer.SerializeToString(flag);
+            Assert.AreEqual(null, val);
+
+            flag = FlagEnum.A;
+            val = JsonSerializer.SerializeToString(flag);
+            Assert.AreEqual("0", val);
+
+        }
         
         [Flags]
         public enum FlagEnum

@@ -140,7 +140,7 @@ namespace ServiceStack.Text.Json
 		static JsonWriter()
 		{
 			TypeInfo = new TypeInfo {
-				EncodeMapKey = typeof(T) == typeof(bool) || typeof(T).IsNumericType() || (typeof(T).IsEnum && typeof(T).GetCustomAttributes(typeof(FlagsAttribute), true).Length > 0)
+				EncodeMapKey = typeof(T) == typeof(bool) || typeof(T).IsNumericType() || (typeof(T).IsEnumType() && typeof(T).HasAttribute(typeof(FlagsAttribute), true))
 			};
 
             CacheFn = typeof(T) == typeof(object) 

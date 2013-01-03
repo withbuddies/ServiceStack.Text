@@ -244,22 +244,28 @@ namespace ServiceStack.Text.Json
 
 		public void WriteEnum(TextWriter writer, object enumValue)
 		{
-			if (enumValue == null) return;
-			WriteRawString(writer, enumValue.ToString());
+			if (enumValue == null)
+                writer.Write(JsonUtils.Null);
+            else
+			    WriteRawString(writer, enumValue.ToString());
 		}
 
 		public void WriteEnumFlags(TextWriter writer, object enumFlagValue)
 		{
-			if (enumFlagValue == null) return;
-            try
-            {
-                var enumType = Enum.GetUnderlyingType(enumFlagValue.GetType()); 
-                writer.Write(Convert.ChangeType(enumFlagValue, enumType));
-            }
-            catch(Exception ex)
-            {
-                throw new ApplicationException("Unable to coerce " + enumFlagValue + " to int.", ex);
-            }
+			if (enumFlagValue == null)
+                writer.Write(JsonUtils.Null);
+			else
+			{
+                try
+                {
+                    var enumType = Enum.GetUnderlyingType(enumFlagValue.GetType());
+                    writer.Write(Convert.ChangeType(enumFlagValue, enumType));
+                }
+                catch (Exception ex)
+                {
+                    throw new ApplicationException("Unable to coerce " + enumFlagValue + " to int.", ex);
+                }
+			}
 		}
 
 		public void WriteLinqBinary(TextWriter writer, object linqBinaryValue)

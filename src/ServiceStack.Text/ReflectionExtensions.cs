@@ -171,6 +171,19 @@ namespace ServiceStack.Text
 			   || underlyingType == typeof(decimal);
 		}
 
+        public static bool IsEnumType(this Type type)
+        {
+            if (!type.IsValueType) return false;
+            var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+            return underlyingType.IsEnum || underlyingType.UnderlyingSystemType.IsEnum;
+        }
+
+        public static bool HasAttribute(this Type type, Type attributeType, bool inherit)
+        {
+            var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+            return underlyingType.GetCustomAttributes(attributeType, inherit).Length > 0;
+        }
+
 		public static Type GetTypeWithGenericInterfaceOf(this Type type, Type genericInterfaceType)
 		{
 			foreach (var t in type.GetInterfaces())
