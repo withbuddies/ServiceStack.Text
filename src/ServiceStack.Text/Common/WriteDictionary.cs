@@ -131,9 +131,16 @@ namespace ServiceStack.Text.Common
                     if (encodeMapKey)
                     {
                         JsState.IsWritingValue = true; //prevent ""null""
-                        writer.Write(JsWriter.QuoteChar);
-                        writeKeyFn(writer, key);
-                        writer.Write(JsWriter.QuoteChar);
+                        try
+                        {
+                            writer.Write(JsWriter.QuoteChar);
+                            writeKeyFn(writer, key);
+                            writer.Write(JsWriter.QuoteChar);
+                        }
+                        finally
+                        {
+                            JsState.IsWritingValue = false;
+                        }
                     }
                     else
                     {
@@ -215,9 +222,16 @@ namespace ServiceStack.Text.Common
                     if (encodeMapKey)
                     {
                         JsState.IsWritingValue = true; //prevent ""null""
-                        writer.Write(JsWriter.QuoteChar);
-                        writeKeyFn(writer, kvp.Key);
-                        writer.Write(JsWriter.QuoteChar);
+                        try
+                        {
+                            writer.Write(JsWriter.QuoteChar);
+                            writeKeyFn(writer, kvp.Key);
+                            writer.Write(JsWriter.QuoteChar);
+                        }
+                        finally
+                        {
+                            JsState.IsWritingValue = false;
+                        }
                     }
                     else
                     {
