@@ -95,6 +95,7 @@ namespace ServiceStack.Text.Common
 		public static void WriteIDictionary(TextWriter writer, object oMap)
 		{
 			WriteObjectDelegate writeKeyFn = null;
+            Type writeKeyFnType = null;
 			WriteObjectDelegate writeValueFn = null;
 
 			writer.Write(JsWriter.MapStartChar);
@@ -109,10 +110,11 @@ namespace ServiceStack.Text.Common
                 var isNull = (dictionaryValue == null);
                 if (isNull && !JsConfig.IncludeNullValues) continue;
 
-				if (writeKeyFn == null)
+                var keyType = key.GetType();
+				if (writeKeyFn == null || keyType != writeKeyFnType)
 				{
-					var keyType = key.GetType();
 					writeKeyFn = Serializer.GetWriteFn(keyType);
+                    writeKeyFnType = keyType;
 					encodeMapKey = Serializer.GetTypeInfo(keyType).EncodeMapKey;
 				}
 
