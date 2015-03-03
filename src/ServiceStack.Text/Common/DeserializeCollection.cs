@@ -71,6 +71,7 @@ namespace ServiceStack.Text.Common
 
 		private static ICollection<T> CreateAndPopulate<T>(Type ofCollectionType, T[] withItems)
 		{
+            if (withItems == null) return null;
 			if (ofCollectionType == null) return new List<T>(withItems);
 
 			var genericTypeDefinition = ofCollectionType.IsGenericType()
