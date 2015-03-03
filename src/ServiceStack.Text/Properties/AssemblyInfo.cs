@@ -34,3 +34,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("3.6.1.*")]
 //[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: InternalsVisibleTo("ServiceStack.Text.Tests")]
