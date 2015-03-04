@@ -32,12 +32,13 @@ namespace ServiceStack.Text
         {
             var underlyingType = EnumInfo<T>.UnderlyingType;
             var value2 = Convert.ChangeType(value, underlyingType, CultureInfo.InvariantCulture);
-            return (T)Enum.ToObject(typeof(T), value2);
+            return (T)Enum.ToObject(EnumInfo<T>.EnumType, value2);
         }
 
         private static class EnumInfo<T>
         {
             public static readonly bool IsEnum;
+            public static readonly Type EnumType;
             public static readonly Type UnderlyingType;
             public static readonly Dictionary<string, T> ValuesByName;
             public static readonly Dictionary<string, T> CaseInsensitiveValuesByName; 
@@ -45,6 +46,7 @@ namespace ServiceStack.Text
             static EnumInfo()
             {
                 var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+                EnumType = type;
                 IsEnum = type.IsEnum;
                 if (!IsEnum) return;
                 UnderlyingType = Enum.GetUnderlyingType(type);
