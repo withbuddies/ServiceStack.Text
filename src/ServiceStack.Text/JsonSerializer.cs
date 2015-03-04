@@ -56,9 +56,14 @@ namespace ServiceStack.Text
             if (typeof(T) == typeof(object) || typeof(T).IsAbstract || typeof(T).IsInterface)
             {
                 if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = true;
-                var result = SerializeToString(value, value.GetType());
-                if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
-                return result;
+                try
+                {
+                    return SerializeToString(value, value.GetType());
+                }
+                finally
+                {
+                    if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                }
             }
 
 			var sb = new StringBuilder();
@@ -106,8 +111,14 @@ namespace ServiceStack.Text
             if (typeof(T) == typeof(object) || typeof(T).IsAbstract || typeof(T).IsInterface)
 			{
                 if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = true;
-                SerializeToWriter(value, value.GetType(), writer);
-                if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                try
+                {
+                    SerializeToWriter(value, value.GetType(), writer);
+                }
+                finally
+                {
+                    if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                }
                 return;
 			}
 
@@ -132,8 +143,14 @@ namespace ServiceStack.Text
 			if (typeof(T) == typeof(object) || typeof(T).IsAbstract || typeof(T).IsInterface)
 			{
                 if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = true;
-                SerializeToStream(value, value.GetType(), stream);
-                if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                try
+                {
+                    SerializeToStream(value, value.GetType(), stream);
+                }
+                finally
+                {
+                    if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                }
 				return;
 			}
 

@@ -103,8 +103,14 @@ namespace ServiceStack.Text.Json
 
 			var prevState = JsState.IsWritingDynamic;
 			JsState.IsWritingDynamic = true;
-			writeFn(writer, value);
-			JsState.IsWritingDynamic = prevState;
+            try
+            {
+                writeFn(writer, value);
+            }
+            finally
+            {
+                JsState.IsWritingDynamic = prevState;
+            }
 		}
 
 		public static WriteObjectDelegate GetValueTypeToStringMethod(Type type)

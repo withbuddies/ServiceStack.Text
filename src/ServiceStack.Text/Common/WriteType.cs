@@ -175,8 +175,14 @@ namespace ServiceStack.Text.Common
 
 			var writeFn = Serializer.GetWriteFn(valueType);			
 			if (!JsConfig<T>.ExcludeTypeInfo) JsState.IsWritingDynamic = true;
-			writeFn(writer, value);
-			if (!JsConfig<T>.ExcludeTypeInfo) JsState.IsWritingDynamic = false;
+            try
+            {
+                writeFn(writer, value);
+            }
+            finally
+            {
+                if (!JsConfig<T>.ExcludeTypeInfo) JsState.IsWritingDynamic = false;
+            }
 		}
 		 
 		public static void WriteProperties(TextWriter writer, object value)
