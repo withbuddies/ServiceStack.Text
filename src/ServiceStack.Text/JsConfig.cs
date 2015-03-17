@@ -33,6 +33,19 @@ namespace ServiceStack.Text
 			}
 		}
 
+        private static int? maxDepth;
+        public static int MaxDepth
+        {
+            get
+            {
+                return maxDepth.GetValueOrDefault(int.MaxValue);
+            }
+            set
+            {
+                maxDepth = value;
+            }
+        }
+
 		[ThreadStatic]
 		private static bool? tsIncludeNullValues;
 		private static bool? sIncludeNullValues;
@@ -114,6 +127,7 @@ namespace ServiceStack.Text
 			tsExcludeTypeInfo = sExcludeTypeInfo = null;
 			tsEmitCamelCaseNames = sEmitCamelCaseNames = null;
 			tsDateHandler = sDateHandler = null;
+            maxDepth = null;
 			HasSerializeFn = new HashSet<Type>();
 		}
 

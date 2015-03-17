@@ -184,6 +184,7 @@
     <Compile Include="JsonTests\PolymorphicListTests.cs" />
     <Compile Include="JsonTests\StringParsingTests.cs" />
     <Compile Include="JsvTests\JsvDeserializeTypeTest.cs" />
+    <Compile Include="MadDepthTests.cs" />
     <Compile Include="MessagingTests.cs" />
     <Compile Include="NullableTypesTests.cs" />
     <Compile Include="StringConverterUtilsTests.cs" />
