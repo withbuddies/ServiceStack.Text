@@ -101,7 +101,10 @@ namespace ServiceStack.Text.Jsv
 
 	    public static void WriteObject(TextWriter writer, object value)
 		{
-			CacheFn(writer, value);
+            using (JsState.OpenWriteObjectScope<T>())
+            {
+                CacheFn(writer, value);
+            }
 		}
 
 	}
