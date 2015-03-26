@@ -132,7 +132,7 @@ namespace ServiceStack.Text.Common
 			{
 				get
 				{
-					return (JsConfig.EmitCamelCaseNames)
+					return (JsConfig.EmitCamelCaseNames || JsConfig<T>.EmitCamelCaseNames)
 						? propertyNameCLSFriendly
 						: propertyName;
 				}
