@@ -66,6 +66,22 @@ namespace ServiceStack.Text.Tests.JsonTests
             Assert.AreEqual(null, mock.Value2);
         }
 
+        [Test]
+        public void JsonNumericSerializesWithUnderlyingType()
+        {
+            var json = JsonSerializer.SerializeToString(new { Value = JsonNumericEnum.A });
+            Assert.AreEqual(@"{""Value"":0}", json);
+        }
+
+        [AttributeUsage(AttributeTargets.Enum)]
+        public class JsonNumericAttribute : Attribute {}
+
+        [JsonNumeric]
+        public enum JsonNumericEnum
+        {
+            A, B
+        }
+
         private class MockWithEnums
         {
             public FlagEnum Value1 { get; set; }

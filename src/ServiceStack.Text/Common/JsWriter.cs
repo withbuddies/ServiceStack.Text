@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using ServiceStack.Text.Json;
 using ServiceStack.Text.Jsv;
 
@@ -181,11 +181,17 @@ namespace ServiceStack.Text.Common
                 return Serializer.WriteDecimal;
 
             if (type.IsEnumType())
-                return type.HasAttribute(typeof(FlagsAttribute), false)
+                return ShouldWriteFlags(type)
                     ? (WriteObjectDelegate)Serializer.WriteEnumFlags
                     : Serializer.WriteEnum;
 
             return Serializer.WriteObjectString;
+        }
+
+        static bool ShouldWriteFlags(Type enumType)
+        {
+            return enumType.HasAttribute(typeof(FlagsAttribute), false)
+                || Attribute.GetCustomAttributes(enumType).Any(a => a.GetType().Name == "JsonNumeric" || a.GetType().Name == "JsonNumericAttribute");
         }
 
         internal WriteObjectDelegate GetWriteFn<T>()
