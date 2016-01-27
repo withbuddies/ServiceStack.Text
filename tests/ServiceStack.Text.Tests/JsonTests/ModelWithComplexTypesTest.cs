@@ -6,8 +6,6 @@ using ServiceStack.Text.Tests.DynamicModels;
 
 namespace ServiceStack.Text.Tests.JsonTests
 {
-    
-
     [TestFixture]
     public class ModelWithComplexTypesTest
     {
@@ -21,6 +19,19 @@ namespace ServiceStack.Text.Tests.JsonTests
         {
             public Dictionary<FlagsEnum, int> Dict { get; set; }
         }
+
+        [JsonNumeric]
+        public enum NumericEnum
+        {
+            A = 1, B = 2, C = 3
+        }
+
+
+        public class HasDictOfNumericToInt
+        {
+            public Dictionary<NumericEnum, int> Dict { get; set; }
+        }
+        
 
         private class HasDate
         {
@@ -41,6 +52,23 @@ namespace ServiceStack.Text.Tests.JsonTests
 
             StringAssert.Contains("\"1\":123", json);
             Assert.IsNotNull(fromJson );
+        }
+
+
+        [Test]
+        public void CanSerializeTypeWithDictOfNumeric()
+        {
+            var instance = new HasDictOfNumericToInt
+            {
+                Dict = new Dictionary<NumericEnum, int> { { NumericEnum.A, 123 } }
+            };
+
+            var json = JsonSerializer.SerializeToString(instance);
+
+            var fromJson = new JavaScriptSerializer().Deserialize<HasDate>(json);
+
+            StringAssert.Contains("\"1\":123", json);
+            Assert.IsNotNull(fromJson);
         }
 
         [Test]
