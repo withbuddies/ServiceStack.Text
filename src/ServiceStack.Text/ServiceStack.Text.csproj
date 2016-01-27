@@ -270,6 +270,7 @@
     <Compile Include="TypeConfig.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TypeExtensions.cs" />
     <Compile Include="TypeSerializer.cs">
       <SubType>Code</SubType>
     </Compile>
