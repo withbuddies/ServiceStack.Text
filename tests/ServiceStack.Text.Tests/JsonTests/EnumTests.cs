@@ -37,6 +37,20 @@ namespace ServiceStack.Text.Tests.JsonTests
         }
 
         [Test]
+        public void CanSerializeNullableJsonNumeric()
+        {
+            JsonNumericEnum? flag = null;
+
+            var val = JsonSerializer.SerializeToString(flag);
+            Assert.AreEqual(null, val);
+
+            flag = JsonNumericEnum.A;
+            val = JsonSerializer.SerializeToString(flag);
+            Assert.AreEqual("0", val);
+
+        }
+
+        [Test]
         public void CanDeserializeNullableEnum()
         {
             var enumJson = JsonSerializer.SerializeToString(FlagEnum.A);
