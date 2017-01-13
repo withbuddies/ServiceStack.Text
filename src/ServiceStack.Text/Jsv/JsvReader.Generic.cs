@@ -33,7 +33,7 @@ namespace ServiceStack.Text.Jsv
 
             var genericType = typeof(JsvReader<>).MakeGenericType(type);
             var mi = genericType.GetMethod("GetParseFn", BindingFlags.Public | BindingFlags.Static);
-            parseFactoryFn = (ParseFactoryDelegate)Delegate.CreateDelegate(typeof(ParseFactoryDelegate), mi);
+            parseFactoryFn = (ParseFactoryDelegate)mi.CreateDelegate(typeof(ParseFactoryDelegate));
 
             Dictionary<Type, ParseFactoryDelegate> snapshot, newCache;
             do
@@ -67,7 +67,7 @@ namespace ServiceStack.Text.Jsv
 		{
 			if (ReadFn == null)
 			{
-				if (typeof(T).IsInterface)
+				if (typeof(T).GetTypeInfo().IsInterface)
 				{
 					throw new NotSupportedException("Can not deserialize interface type: "
 						+ typeof(T).Name);

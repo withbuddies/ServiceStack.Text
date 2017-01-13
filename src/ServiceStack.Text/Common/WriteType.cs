@@ -16,6 +16,7 @@ using System.Threading;
 using ServiceStack.Text.Json;
 using ServiceStack.Text.Reflection;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace ServiceStack.Text.Common
@@ -33,10 +34,11 @@ namespace ServiceStack.Text.Common
 		{
 			CacheFn = Init() ? GetWriteFn() : WriteEmptyType;
 
-			if (typeof(T).IsAbstract)
+            var info = typeof(T).GetTypeInfo();
+			if (info.IsAbstract)
 			{
 				WriteTypeInfo = TypeInfoWriter;
-				if (!typeof(T).IsInterface)
+				if (!info.IsInterface)
 				{
 					CacheFn = WriteAbstractProperties;
 				}
@@ -72,7 +74,8 @@ namespace ServiceStack.Text.Common
 
 		private static bool Init()
 		{
-			if (!typeof(T).IsClass && !typeof(T).IsInterface) return false;
+            var info = typeof(T).GetTypeInfo();
+			if (!info.IsClass && !info.IsInterface) return false;
 
 			var propertyInfos = TypeConfig<T>.Properties;
 			if (propertyInfos.Length == 0 && !JsState.IsWritingDynamic)
@@ -87,7 +90,7 @@ namespace ServiceStack.Text.Common
 			// NOTE: very limited support for DataContractSerialization (DCS)
 			//	NOT supporting Serializable
 			//	support for DCS is intended for (re)Name of properties and Ignore by NOT having a DataMember present
-			var isDataContract = typeof(T).GetCustomAttributes(typeof(DataContractAttribute), false).Any();
+			var isDataContract = info.GetCustomAttributes(typeof(DataContractAttribute), false).Any();
 			for (var i = 0; i < propertyNamesLength; i++)
 			{
 				var propertyInfo = propertyInfos[i];
@@ -109,7 +112,7 @@ namespace ServiceStack.Text.Common
 				}
 
 			    var propertyType = propertyInfo.PropertyType;
-			    var suppressDefaultValue = propertyType.IsValueType && JsConfig.HasSerializeFn.Contains(propertyType)
+			    var suppressDefaultValue = propertyType.GetTypeInfo().IsValueType && JsConfig.HasSerializeFn.Contains(propertyType)
 			        ? ReflectionExtensions.GetDefaultValue(propertyType)
 			        : null;
 
@@ -167,7 +170,7 @@ namespace ServiceStack.Text.Common
 				return;
 			}
 			var valueType = value.GetType();
-			if (valueType.IsAbstract)
+			if (valueType.GetTypeInfo().IsAbstract)
 			{
 				WriteProperties(writer, value);
 				return;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ServiceStack.Text.Common
 {
@@ -13,7 +14,7 @@ namespace ServiceStack.Text.Common
 		{
 			var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
 
-			if (type.IsEnum)
+			if (type.GetTypeInfo().IsEnum)
 			{
 				return x => EnumUtils.Parse<T>(x, true);
 			}
@@ -81,7 +82,7 @@ namespace ServiceStack.Text.Common
 				if (parseFn != null) return parseFn;
 			}
 
-			if (type.IsValueType) 
+			if (type.GetTypeInfo().IsValueType) 
 			{
 				var staticParseMethod = StaticParseMethod<T>.Parse;
 				if (staticParseMethod != null)

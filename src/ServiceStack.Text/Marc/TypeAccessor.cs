@@ -67,7 +67,8 @@ namespace FastMember
 
         private static void WriteGetter(ILGenerator il, Type type, PropertyInfo[] props, FieldInfo[] fields, bool isStatic)
         {
-            LocalBuilder loc = type.IsValueType ? il.DeclareLocal(type) : null;
+            bool valueType = type.GetTypeInfo().IsValueType;
+            LocalBuilder loc = valueType ? il.DeclareLocal(type) : null;
             OpCode propName = isStatic ? OpCodes.Ldarg_1 : OpCodes.Ldarg_2, target = isStatic ? OpCodes.Ldarg_0 : OpCodes.Ldarg_1;
             foreach (PropertyInfo prop in props)
             {
@@ -81,8 +82,8 @@ namespace FastMember
                 // match:
                 il.Emit(target);
                 Cast(il, type, loc);
-                il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, prop.GetGetMethod(), null);
-                if (prop.PropertyType.IsValueType)
+                il.EmitCall(valueType ? OpCodes.Call : OpCodes.Callvirt, prop.GetGetMethod(), null);
+                if (prop.PropertyType.GetTypeInfo().IsValueType)
                 {
                     il.Emit(OpCodes.Box, prop.PropertyType);
                 }
@@ -101,7 +102,7 @@ namespace FastMember
                 il.Emit(target);
                 Cast(il, type, loc);
                 il.Emit(OpCodes.Ldfld, field);
-                if (field.FieldType.IsValueType)
+                if (field.FieldType.GetTypeInfo().IsValueType)
                 {
                     il.Emit(OpCodes.Box, field.FieldType);
                 }
@@ -115,7 +116,7 @@ namespace FastMember
         }
         private static void WriteSetter(ILGenerator il, Type type, PropertyInfo[] props, FieldInfo[] fields, bool isStatic)
         {
-            if (type.IsValueType)
+            if (type.GetTypeInfo().IsValueType)
             {
                 il.Emit(OpCodes.Ldstr, "Write is not supported for structs");
                 il.Emit(OpCodes.Newobj, typeof(NotSupportedException).GetConstructor(new Type[] { typeof(string) }));
@@ -126,7 +127,7 @@ namespace FastMember
                 OpCode propName = isStatic ? OpCodes.Ldarg_1 : OpCodes.Ldarg_2,
                        target = isStatic ? OpCodes.Ldarg_0 : OpCodes.Ldarg_1,
                        value = isStatic ? OpCodes.Ldarg_2 : OpCodes.Ldarg_3;
-                LocalBuilder loc = type.IsValueType ? il.DeclareLocal(type) : null;
+                LocalBuilder loc = type.GetTypeInfo().IsValueType ? il.DeclareLocal(type) : null;
                 foreach (PropertyInfo prop in props)
                 {
                     if (prop.GetIndexParameters().Length != 0 || !prop.CanWrite) continue;
@@ -141,7 +142,7 @@ namespace FastMember
                     Cast(il, type, loc);
                     il.Emit(value);
                     Cast(il, prop.PropertyType, null);
-                    il.EmitCall(type.IsValueType ? OpCodes.Call : OpCodes.Callvirt, prop.GetSetMethod(), null);
+                    il.EmitCall(type.GetTypeInfo().IsValueType ? OpCodes.Call : OpCodes.Callvirt, prop.GetSetMethod(), null);
                     il.Emit(OpCodes.Ret);
                     // not match:
                     il.MarkLabel(next);
@@ -194,8 +195,8 @@ namespace FastMember
         }
         private static bool IsFullyPublic(Type type)
         {
-            while (type.IsNestedPublic) type = type.DeclaringType;
-            return type.IsPublic;
+            while (type.GetTypeInfo().IsNestedPublic) type = type.DeclaringType;
+            return type.GetTypeInfo().IsPublic;
         }
         static TypeAccessor CreateNew(Type type)
         {
@@ -207,7 +208,7 @@ namespace FastMember
             PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
             ConstructorInfo ctor = null;
-            if(type.IsClass && !type.IsAbstract)
+            if(type.GetTypeInfo().IsClass && !type.GetTypeInfo().IsAbstract)
             {
                 ctor = type.GetConstructor(Type.EmptyTypes);
             }
@@ -236,11 +237,15 @@ namespace FastMember
             if(assembly == null)
             {
                 AssemblyName name = new AssemblyName("FastMember_dynamic");
+#if CORE_CLR
+                assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+#else
                 assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+#endif
                 module = assembly.DefineDynamicModule(name.Name);
             }
             TypeBuilder tb = module.DefineType("FastMember_dynamic." + type.Name + "_" + Interlocked.Increment(ref counter),
-                (typeof(TypeAccessor).Attributes | TypeAttributes.Sealed) & ~TypeAttributes.Abstract, typeof(TypeAccessor) );
+                (typeof(TypeAccessor).GetTypeInfo().Attributes | TypeAttributes.Sealed) & ~TypeAttributes.Abstract, typeof(TypeAccessor) );
 
             tb.DefineDefaultConstructor(MethodAttributes.Public);
             PropertyInfo indexer = typeof (TypeAccessor).GetProperty("Item");
@@ -272,13 +277,18 @@ namespace FastMember
                 tb.DefineMethodOverride(body, baseMethod);
             }
 
-            return (TypeAccessor)Activator.CreateInstance(tb.CreateType());
+#if CORE_CLR
+            var t = tb.CreateTypeInfo().AsType();
+#else
+            var t = tb.CreateType();
+#endif
+            return (TypeAccessor)Activator.CreateInstance(t);
         }
 
         private static void Cast(ILGenerator il, Type type, LocalBuilder addr)
         {
             if(type == typeof(object)) {}
-            else if(type.IsValueType)
+            else if(type.GetTypeInfo().IsValueType)
             {
                 il.Emit(OpCodes.Unbox_Any, type);
                 if (addr != null)

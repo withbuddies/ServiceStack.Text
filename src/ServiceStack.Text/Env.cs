@@ -7,8 +7,13 @@ namespace ServiceStack.Text
 	{
 		static Env()
 		{
-			var platform = (int)Environment.OSVersion.Platform;
+#if CORE_CLR
+            IsUnix = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(
+                System.Runtime.InteropServices.OSPlatform.Linux);
+#else
+            var platform = (int)Environment.OSVersion.Platform;
 			IsUnix = (platform == 4) || (platform == 6) || (platform == 128);
+#endif
 
 			IsMono = Type.GetType("Mono.Runtime") != null;
 
@@ -18,7 +23,9 @@ namespace ServiceStack.Text
 
 			ServerUserAgent = "ServiceStack/" +
 				ServiceStackVersion + " "
-				+ Environment.OSVersion.Platform
+#if !CORE_CLR
+                + Environment.OSVersion.Platform
+#endif
 				+ (IsMono ? "/Mono" : "/.NET")
 				+ (IsMonoTouch ? " MonoTouch" : "");
 		}

@@ -34,7 +34,7 @@ namespace ServiceStack.Text.Json
 
 				var genericType = typeof(JsonWriter<>).MakeGenericType(type);
 				var mi = genericType.GetMethod("WriteFn", BindingFlags.Public | BindingFlags.Static);
-				var writeFactoryFn = (Func<WriteObjectDelegate>)Delegate.CreateDelegate(typeof(Func<WriteObjectDelegate>), mi);
+				var writeFactoryFn = (Func<WriteObjectDelegate>)mi.CreateDelegate(typeof(Func<WriteObjectDelegate>));
 				writeFn = writeFactoryFn();
 
 				Dictionary<Type, WriteObjectDelegate> snapshot, newCache;
@@ -67,7 +67,7 @@ namespace ServiceStack.Text.Json
 
 				var genericType = typeof(JsonWriter<>).MakeGenericType(type);
 				var mi = genericType.GetMethod("GetTypeInfo", BindingFlags.Public | BindingFlags.Static);
-				var writeFactoryFn = (Func<TypeInfo>)Delegate.CreateDelegate(typeof(Func<TypeInfo>), mi);
+				var writeFactoryFn = (Func<TypeInfo>)mi.CreateDelegate(typeof(Func<TypeInfo>));
 				writeFn = writeFactoryFn();
 
 				Dictionary<Type, TypeInfo> snapshot, newCache;

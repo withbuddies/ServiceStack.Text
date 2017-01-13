@@ -40,7 +40,7 @@ namespace ServiceStack.Text.Common
 				return ParseStringDictionary;
 			}
 
-			var dictionaryArgs = mapInterface.GetGenericArguments();
+			var dictionaryArgs = mapInterface.GetTypeInfo().GetGenericArguments();
 
 			var keyTypeParseMethod = Serializer.GetParseFn(dictionaryArgs[KeyIndex]);
 			if (keyTypeParseMethod == null) return null;
@@ -162,9 +162,9 @@ namespace ServiceStack.Text.Common
 			if (ParseDelegateCache.TryGetValue(key, out parseDelegate))
                 return parseDelegate(value, createMapType, keyParseFn, valueParseFn);
 
-            var mi = typeof(DeserializeDictionary<TSerializer>).GetMethod("ParseDictionary", BindingFlags.Static | BindingFlags.Public);
+            var mi = typeof(DeserializeDictionary<TSerializer>).GetTypeInfo().GetMethod("ParseDictionary", BindingFlags.Static | BindingFlags.Public);
             var genericMi = mi.MakeGenericMethod(argTypes);
-            parseDelegate = (ParseDictionaryDelegate)Delegate.CreateDelegate(typeof(ParseDictionaryDelegate), genericMi);
+            parseDelegate = (ParseDictionaryDelegate)genericMi.CreateDelegate(typeof(ParseDictionaryDelegate));
 
             Dictionary<string, ParseDictionaryDelegate> snapshot, newCache;
             do

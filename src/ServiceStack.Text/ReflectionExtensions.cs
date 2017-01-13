@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using ServiceStack.Text.Support;
@@ -29,7 +30,7 @@ namespace ServiceStack.Text
 
 		public static object GetDefaultValue(Type type)
 		{
-			if (!type.IsValueType) return null;
+			if (!type.GetTypeInfo().IsValueType) return null;
 
 			object defaultValue;
 			if (DefaultValueTypes.TryGetValue(type, out defaultValue)) return defaultValue;
@@ -56,7 +57,7 @@ namespace ServiceStack.Text
 				if (type == thisOrBaseType)
 					return true;
 
-				type = type.BaseType;
+				type = type.GetTypeInfo().BaseType;
 			}
 			return false;
 		}
@@ -65,10 +66,10 @@ namespace ServiceStack.Text
 		{
 			while (type != null)
 			{
-				if (type.IsGenericType)
+				if (type.GetTypeInfo().IsGenericType)
 					return true;
 
-				type = type.BaseType;
+				type = type.GetTypeInfo().BaseType;
 			}
 			return false;
 		}
@@ -77,10 +78,10 @@ namespace ServiceStack.Text
 		{
 			while (type != null)
 			{
-				if (type.IsGenericType)
+				if (type.GetTypeInfo().IsGenericType)
 					return type;
 
-				type = type.BaseType;
+				type = type.GetTypeInfo().BaseType;
 			}
 			return null;
 		}
@@ -92,9 +93,9 @@ namespace ServiceStack.Text
 
 		public static Type GetTypeWithGenericTypeDefinitionOf(this Type type, Type genericTypeDefinition)
 		{
-			foreach (var t in type.GetInterfaces())
+			foreach (var t in type.GetTypeInfo().GetInterfaces())
 			{
-				if (t.IsGenericType && t.GetGenericTypeDefinition() == genericTypeDefinition)
+				if (t.IsGenericType() && t.GetGenericTypeDefinition() == genericTypeDefinition)
 				{
 					return t;
 				}
@@ -113,7 +114,7 @@ namespace ServiceStack.Text
 		{
 			if (type == interfaceType) return interfaceType;
 
-			foreach (var t in type.GetInterfaces())
+			foreach (var t in type.GetTypeInfo().GetInterfaces())
 			{
 				if (t == interfaceType)
 					return t;
@@ -124,7 +125,7 @@ namespace ServiceStack.Text
 
 		public static bool HasInterface(this Type type, Type interfaceType)
 		{
-			foreach (var t in type.GetInterfaces())
+			foreach (var t in type.GetTypeInfo().GetInterfaces())
 			{
 				if (t == interfaceType)
 					return true;
@@ -144,13 +145,13 @@ namespace ServiceStack.Text
 
 		public static bool IsNumericType(this Type type)
 		{
-			if (!type.IsValueType) return false;
+			if (!type.GetTypeInfo().IsValueType) return false;
 			return type.IsIntegerType() || type.IsRealNumberType();
 		}
 
 		public static bool IsIntegerType(this Type type)
 		{
-			if (!type.IsValueType) return false;
+			if (!type.GetTypeInfo().IsValueType) return false;
 			var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
 			return underlyingType == typeof(byte)
 			   || underlyingType == typeof(sbyte)
@@ -164,7 +165,7 @@ namespace ServiceStack.Text
 
 		public static bool IsRealNumberType(this Type type)
 		{
-			if (!type.IsValueType) return false;
+			if (!type.GetTypeInfo().IsValueType) return false;
 			var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
 			return underlyingType == typeof(float)
 			   || underlyingType == typeof(double)
@@ -173,25 +174,26 @@ namespace ServiceStack.Text
 
         public static bool IsEnumType(this Type type)
         {
-            if (!type.IsValueType) return false;
+            if (!type.GetTypeInfo().IsValueType) return false;
             var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
-            return underlyingType.IsEnum || underlyingType.UnderlyingSystemType.IsEnum;
+            var info = underlyingType.GetTypeInfo();
+            return info.IsEnum || info.UnderlyingSystemType.GetTypeInfo().IsEnum;
         }
 
         public static bool HasAttribute(this Type type, Type attributeType, bool inherit)
         {
             var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
-            return underlyingType.GetCustomAttributes(attributeType, inherit).Length > 0;
+            return underlyingType.GetTypeInfo().GetCustomAttributes(attributeType, inherit).Any();
         }
 
 		public static Type GetTypeWithGenericInterfaceOf(this Type type, Type genericInterfaceType)
 		{
-			foreach (var t in type.GetInterfaces())
+			foreach (var t in type.GetTypeInfo().GetInterfaces())
 			{
-				if (t.IsGenericType && t.GetGenericTypeDefinition() == genericInterfaceType) return t;
+				if (t.IsGenericType() && t.GetGenericTypeDefinition() == genericInterfaceType) return t;
 			}
 
-			if (!type.IsGenericType) return null;
+			if (!type.IsGenericType()) return null;
 
 			var genericType = type.GetGenericType();
 			return genericType.GetGenericTypeDefinition() == genericInterfaceType
@@ -201,7 +203,7 @@ namespace ServiceStack.Text
 
 		public static bool HasAnyTypeDefinitionsOf(this Type genericType, params Type[] theseGenericTypes)
 		{
-			if (!genericType.IsGenericType) return false;
+			if (!genericType.IsGenericType()) return false;
 			var genericTypeDefinition = genericType.GetGenericTypeDefinition();
 
 			foreach (var thisGenericType in theseGenericTypes)
@@ -265,7 +267,7 @@ namespace ServiceStack.Text
 		{
 			foreach (var type in types)
 			{
-				if (!(type == typeof(string) || type.IsValueType)) return false;
+				if (!(type == typeof(string) || type.GetTypeInfo().IsValueType)) return false;
 			}
 			return true;
 		}
@@ -316,14 +318,14 @@ namespace ServiceStack.Text
 
 		public static EmptyCtorDelegate GetConstructorMethodToCache(Type type)
 		{
-			var emptyCtor = type.GetConstructor(Type.EmptyTypes);
+			var emptyCtor = type.GetTypeInfo().GetConstructor(Type.EmptyTypes);
 			if (emptyCtor != null)
 			{
 
 #if MONOTOUCH || SILVERLIGHT || XBOX
 				return () => Activator.CreateInstance(type);
 #else
-				var dm = new System.Reflection.Emit.DynamicMethod("MyCtor", type, Type.EmptyTypes, typeof(ReflectionExtensions).Module, true);
+				var dm = new System.Reflection.Emit.DynamicMethod("MyCtor", type, Type.EmptyTypes, typeof(ReflectionExtensions).GetTypeInfo().Module, true);
 				var ilgen = dm.GetILGenerator();
 				ilgen.Emit(System.Reflection.Emit.OpCodes.Nop);
 				ilgen.Emit(System.Reflection.Emit.OpCodes.Newobj, emptyCtor);
@@ -336,8 +338,14 @@ namespace ServiceStack.Text
 #if SILVERLIGHT || XBOX
 			return () => Activator.CreateInstance(type);
 #else
-			//Anonymous types don't have empty constructors
-			return () => FormatterServices.GetUninitializedObject(type);
+#if CORE_CLR
+            // todo - in a future version this should be supported
+            //return () => RuntimeHelpers.GetUninitializedObject(type);
+            return () => Activator.CreateInstance(type);
+#else
+            //Anonymous types don't have empty constructors
+            return () => FormatterServices.GetUninitializedObject(type);
+#endif
 #endif
 		}
 
@@ -369,7 +377,7 @@ namespace ServiceStack.Text
 
 		public static PropertyInfo[] GetPublicProperties(this Type type)
 		{
-			if (type.IsInterface)
+			if (type.GetTypeInfo().IsInterface)
 			{
 				var propertyInfos = new List<PropertyInfo>();
 
@@ -402,7 +410,7 @@ namespace ServiceStack.Text
 				return propertyInfos.ToArray();
 			}
 
-			return type.GetProperties(BindingFlags.FlattenHierarchy
+			return type.GetTypeInfo().GetProperties(BindingFlags.FlattenHierarchy
 				| BindingFlags.Public | BindingFlags.Instance);
 		}
 
@@ -429,7 +437,7 @@ namespace ServiceStack.Text
 
 		public static bool IsDto(this Type type)
 		{
-			return type.GetCustomAttributes(true).Any(x => x.GetType().Name == DataContract);
+			return type.GetTypeInfo().GetCustomAttributes(true).Any(x => x.GetType().Name == DataContract);
 		}
 
 	}

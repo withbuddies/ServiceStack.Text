@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using ServiceStack.Text.Json;
 using ServiceStack.Text.Jsv;
 
@@ -129,7 +130,7 @@ namespace ServiceStack.Text.Common
         		{ typeof(Uri), Serializer.WriteObjectString },
         		{ typeof(Type), WriteType },
         		{ typeof(Exception), Serializer.WriteException },
-#if !MONOTOUCH && !SILVERLIGHT && !XBOX
+#if !MONOTOUCH && !SILVERLIGHT && !XBOX && !CORE_CLR
                 { typeof(System.Data.Linq.Binary), Serializer.WriteLinqBinary },
 #endif
         	};
@@ -197,7 +198,7 @@ namespace ServiceStack.Text.Common
                 return Serializer.WriteObjectString;
             }
 
-            if (typeof(T).IsValueType)
+            if (typeof(T).GetTypeInfo().IsValueType)
             {
                 return JsConfig<T>.SerializeFn != null
                     ? JsConfig<T>.WriteFn<TSerializer>
@@ -236,7 +237,7 @@ namespace ServiceStack.Text.Common
                 var mapInterface = typeof(T).GetTypeWithGenericTypeDefinitionOf(typeof(IDictionary<,>));
                 if (mapInterface != null)
                 {
-                    var mapTypeArgs = mapInterface.GetGenericArguments();
+                    var mapTypeArgs = mapInterface.GetTypeInfo().GetGenericArguments();
                     var writeFn = WriteDictionary<TSerializer>.GetWriteGenericDictionary(
                         mapTypeArgs[0], mapTypeArgs[1]);
 
@@ -249,7 +250,7 @@ namespace ServiceStack.Text.Common
                 var enumerableInterface = typeof(T).GetTypeWithGenericTypeDefinitionOf(typeof(IEnumerable<>));
                 if (enumerableInterface != null)
                 {
-                    var elementType = enumerableInterface.GetGenericArguments()[0];
+                    var elementType = enumerableInterface.GetTypeInfo().GetGenericArguments()[0];
                     var writeFn = WriteListsOfElements<TSerializer>.GetGenericWriteEnumerable(elementType);
                     return writeFn;
                 }
@@ -267,7 +268,8 @@ namespace ServiceStack.Text.Common
                 return WriteListsOfElements<TSerializer>.WriteIEnumerable;
             }
 
-            if (typeof(T).IsClass || typeof(T).IsInterface)
+            var info = typeof(T).GetTypeInfo();
+            if (info.IsClass || info.IsInterface)
             {
                 var typeToStringMethod = WriteType<T, TSerializer>.Write;
                 if (typeToStringMethod != null)

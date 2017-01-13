@@ -12,6 +12,7 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using ServiceStack.Text.Common;
 using ServiceStack.Text.Json;
@@ -45,16 +46,17 @@ namespace ServiceStack.Text
 		{
 			if (value == null) return null;
 			if (typeof(T) == typeof(string)) return value as string;
-            if (typeof(T) == typeof(object) || typeof(T).IsAbstract || typeof(T).IsInterface)
+            var info = typeof(T).GetTypeInfo();
+            if (typeof(T) == typeof(object) || info.IsAbstract || info.IsInterface)
             {
-                if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = true;
+                if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = true;
                 try
                 {
                     return JsonSerializer.SerializeToString(value, value.GetType());
                 }
                 finally
                 {
-                    if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                    if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = false;
                 }
             }
 
@@ -74,16 +76,17 @@ namespace ServiceStack.Text
 				writer.Write(value);
 				return;
 			}
-            if (typeof(T) == typeof(object) || typeof(T).IsAbstract || typeof(T).IsInterface)
+            var info = typeof(T).GetTypeInfo();
+            if (typeof(T) == typeof(object) || info.IsAbstract || info.IsInterface)
             {
-                if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = true;
+                if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = true;
                 try
                 {
                     JsonSerializer.SerializeToWriter(value, value.GetType(), writer);
                 }
                 finally
                 {
-                    if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                    if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = false;
                 }
                 return;
             }

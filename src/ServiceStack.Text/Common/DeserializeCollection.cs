@@ -103,9 +103,9 @@ namespace ServiceStack.Text.Common
 			if (ParseDelegateCache.TryGetValue(elementType, out parseDelegate))
                 return parseDelegate(value, createType, parseFn);
 
-            var mi = typeof(DeserializeCollection<TSerializer>).GetMethod("ParseCollection", BindingFlags.Static | BindingFlags.Public);
+            var mi = typeof(DeserializeCollection<TSerializer>).GetTypeInfo().GetMethod("ParseCollection", BindingFlags.Static | BindingFlags.Public);
             var genericMi = mi.MakeGenericMethod(new[] { elementType });
-            parseDelegate = (ParseCollectionDelegate)Delegate.CreateDelegate(typeof(ParseCollectionDelegate), genericMi);
+            parseDelegate = (ParseCollectionDelegate)genericMi.CreateDelegate(typeof(ParseCollectionDelegate));
 
             Dictionary<Type, ParseCollectionDelegate> snapshot, newCache;
             do

@@ -429,7 +429,11 @@ namespace ServiceStack.Text
         public static bool StartsWithIgnoreCase(this string text, string startsWith)
         {
             return text != null
+#if CORE_CLR
+                && text.StartsWith(startsWith, StringComparison.OrdinalIgnoreCase);
+#else
                 && text.StartsWith(startsWith, StringComparison.InvariantCultureIgnoreCase);
+#endif
         }
 
         public static string ReadAllText(this string filePath)

@@ -58,7 +58,7 @@ namespace ServiceStack.Text
             {
                 return type;
             }
-            var binPath = GetAssemblyBinPath(Assembly.GetExecutingAssembly());
+            var binPath = GetAssemblyBinPath(typeof(AssemblyUtils).GetTypeInfo().Assembly);
             Assembly assembly = null;
             var assemblyDllPath = binPath + String.Format("{0}.{1}", assemblyName, DllExt);
             if (File.Exists(assemblyDllPath))
@@ -94,8 +94,14 @@ namespace ServiceStack.Text
         }
 #endif
 
+#if CORE_CLR
+        private static Assembly LoadAssembly(string assemblyPath)
+        {
+            return System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+        }
+#else
 #if !SILVERLIGHT
-private static Assembly LoadAssembly(string assemblyPath)
+        private static Assembly LoadAssembly(string assemblyPath)
 		{
 			return Assembly.LoadFrom(assemblyPath);
 		}
@@ -107,6 +113,7 @@ private static Assembly LoadAssembly(string assemblyPath)
             var assembly = myPart.Load(sri.Stream);
             return assembly;
         }
+#endif
 #endif
 
 #if !XBOX

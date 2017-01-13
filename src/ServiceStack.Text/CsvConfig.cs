@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ServiceStack.Text
 {
@@ -27,10 +28,10 @@ namespace ServiceStack.Text
 			set
 			{
 				if (value == null) return;
-				if (value.GetType().IsValueType)
+				if (value.GetType().GetTypeInfo().IsValueType)
 					throw new ArgumentException("CustomHeaders is a ValueType");
 
-				var propertyInfos = value.GetType().GetProperties();
+				var propertyInfos = value.GetType().GetTypeInfo().GetProperties();
 				if (propertyInfos.Length == 0) return;
 
 				customHeadersMap = new Dictionary<string, string>();

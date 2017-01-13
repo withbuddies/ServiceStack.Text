@@ -37,7 +37,7 @@ namespace ServiceStack.Text.Common
 
             var genericType = typeof(DeserializeListWithElements<,>).MakeGenericType(elementType, typeof(TSerializer));
             var mi = genericType.GetMethod("ParseGenericList", BindingFlags.Static | BindingFlags.Public);
-            parseDelegate = (ParseListDelegate)Delegate.CreateDelegate(typeof(ParseListDelegate), mi);
+            parseDelegate = (ParseListDelegate)mi.CreateDelegate(typeof(ParseListDelegate));
 
             Dictionary<Type, ParseListDelegate> snapshot, newCache;
             do
@@ -109,7 +109,7 @@ namespace ServiceStack.Text.Common
 			if ((value = DeserializeListWithElements<TSerializer>.StripList(value)) == null) return null;
 
             var isReadOnly = createListType != null 
-                && (createListType.IsGenericType && createListType.GetGenericTypeDefinition() == typeof(ReadOnlyCollection<>));
+                && (createListType.IsGenericType() && createListType.GetGenericTypeDefinition() == typeof(ReadOnlyCollection<>));
 
 			var to = (createListType == null || isReadOnly)
 			    ? new List<T>()

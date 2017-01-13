@@ -77,7 +77,7 @@ namespace ServiceStack.Text.Common
 
             var genericType = typeof(ToStringDictionaryMethods<,,>).MakeGenericType(keyType, valueType, typeof(TSerializer));
             var mi = genericType.GetMethod("WriteIDictionary", BindingFlags.Static | BindingFlags.Public);
-            writeFn = (WriteMapDelegate)Delegate.CreateDelegate(typeof(WriteMapDelegate), mi);
+            writeFn = (WriteMapDelegate)mi.CreateDelegate(typeof(WriteMapDelegate));
 
             Dictionary<MapKey, WriteMapDelegate> snapshot, newCache;
             do

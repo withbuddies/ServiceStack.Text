@@ -58,7 +58,7 @@ namespace ServiceStack.Text.Common
                 return value => value == null ? null : (DateTime?)DateTimeSerializer.ParseShortestXsdDateTime(value);
 			if (typeof(T) == typeof(TimeSpan))
 				return value => TimeSpan.Parse(value);
-#if !MONOTOUCH && !SILVERLIGHT && !XBOX
+#if !MONOTOUCH && !SILVERLIGHT && !XBOX && !CORE_CLR
 			if (typeof(T) == typeof(System.Data.Linq.Binary))
 				return value => new System.Data.Linq.Binary(Convert.FromBase64String(value));
 #endif				

@@ -97,7 +97,7 @@ namespace ServiceStack.Text.Common
 
 			var mi = genericType.GetMethod("ConvertToQueue", BindingFlags.Static | BindingFlags.Public);
 
-			var convertToQueue = (ConvertObjectDelegate)Delegate.CreateDelegate(typeof(ConvertObjectDelegate), mi);
+			var convertToQueue = (ConvertObjectDelegate)mi.CreateDelegate(typeof(ConvertObjectDelegate));
 
 			var parseFn = DeserializeEnumerable<T, TSerializer>.GetParseFn();
 
@@ -125,7 +125,7 @@ namespace ServiceStack.Text.Common
 
 			var mi = genericType.GetMethod("ConvertToStack", BindingFlags.Static | BindingFlags.Public);
 
-			var convertToQueue = (ConvertObjectDelegate)Delegate.CreateDelegate(typeof(ConvertObjectDelegate), mi);
+			var convertToQueue = (ConvertObjectDelegate)mi.CreateDelegate(typeof(ConvertObjectDelegate));
 
 			var parseFn = DeserializeEnumerable<T, TSerializer>.GetParseFn();
 

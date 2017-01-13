@@ -34,7 +34,7 @@ namespace ServiceStack.Text.Jsv
 
                 var genericType = typeof(JsvWriter<>).MakeGenericType(type);
                 var mi = genericType.GetMethod("WriteFn", BindingFlags.Public | BindingFlags.Static);
-                var writeFactoryFn = (Func<WriteObjectDelegate>)Delegate.CreateDelegate(typeof(Func<WriteObjectDelegate>), mi);
+                var writeFactoryFn = (Func<WriteObjectDelegate>)mi.CreateDelegate(typeof(Func<WriteObjectDelegate>));
                 writeFn = writeFactoryFn();
 
                 Dictionary<Type, WriteObjectDelegate> snapshot, newCache;
