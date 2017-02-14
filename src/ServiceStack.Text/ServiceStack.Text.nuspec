@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>ServiceStack.Text-Scopely</id>
-    <version>3.7.0</version>
+    <version>3.7.1</version>
     <title>ServiceStack.Text-Scopely</title>
     <authors>Service Stack</authors>
     <licenseUrl>https://servicestack.net/terms</licenseUrl>
