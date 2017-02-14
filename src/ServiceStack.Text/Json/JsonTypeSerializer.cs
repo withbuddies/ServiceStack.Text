@@ -137,7 +137,7 @@ namespace ServiceStack.Text.Json
 			if (charValue == null)
 				writer.Write(JsonUtils.Null);
 			else
-				WriteRawString(writer, ((char)charValue).ToString(CultureInfo.InvariantCulture));
+				WriteRawString(writer, ((char)charValue).ToString());
 		}
 
 		public void WriteByte(TextWriter writer, object byteValue)
@@ -263,14 +263,14 @@ namespace ServiceStack.Text.Json
                 }
                 catch (Exception ex)
                 {
-                    throw new ApplicationException("Unable to coerce " + enumFlagValue + " to int.", ex);
+                    throw new Exception("Unable to coerce " + enumFlagValue + " to int.", ex);
                 }
 			}
 		}
 
 		public void WriteLinqBinary(TextWriter writer, object linqBinaryValue)
 		{
-#if !MONOTOUCH && !SILVERLIGHT && !XBOX
+#if !MONOTOUCH && !SILVERLIGHT && !XBOX && !CORE_CLR
 			WriteRawString(writer, Convert.ToBase64String(((System.Data.Linq.Binary)linqBinaryValue).ToArray()));
 #endif
 		}

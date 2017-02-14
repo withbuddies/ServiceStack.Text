@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 
 namespace ServiceStack.Text
 {
@@ -9,7 +10,7 @@ namespace ServiceStack.Text
         {
             enumType = Nullable.GetUnderlyingType(enumType) ?? enumType;
             return enumType.HasAttribute(typeof(FlagsAttribute), false)
-                || Attribute.GetCustomAttributes(enumType).Any(a => a.GetType().Name == "JsonNumeric" || a.GetType().Name == "JsonNumericAttribute");
+                || enumType.GetTypeInfo().GetCustomAttributes(false).Any(a => a.GetType().Name == "JsonNumeric" || a.GetType().Name == "JsonNumericAttribute");
         }
     }
 }

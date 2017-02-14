@@ -47,7 +47,7 @@ namespace ServiceStack.Text
             {
                 var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
                 EnumType = type;
-                IsEnum = type.IsEnum;
+                IsEnum = type.GetTypeInfo().IsEnum;
                 if (!IsEnum) return;
                 UnderlyingType = Enum.GetUnderlyingType(type);
                 var q = from field in type.GetFields(BindingFlags.Public | BindingFlags.Static)

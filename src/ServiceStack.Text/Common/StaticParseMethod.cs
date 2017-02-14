@@ -11,6 +11,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Reflection;
 using ServiceStack.Text.Jsv;
 
@@ -37,21 +38,27 @@ namespace ServiceStack.Text.Common
 		public static ParseStringDelegate GetParseFn()
 		{
 			// Get the static Parse(string) method on the type supplied
-			var parseMethodInfo = typeof(T).GetMethod(
-				ParseMethod, BindingFlags.Public | BindingFlags.Static, null,
-				new[] { typeof(string) }, null);
+            var parseMethodInfo = typeof(T).GetTypeInfo()
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(m => m.Name == ParseMethod)
+                .Where(m =>
+                {
+                    var p = m.GetParameters();
+                    return p.Length == 1 && p[0].ParameterType == typeof(string);
+                })
+                .FirstOrDefault();
 
 			if (parseMethodInfo == null) return null;
 
 			ParseDelegate parseDelegate;
 			try
 			{
-				parseDelegate = (ParseDelegate)Delegate.CreateDelegate(typeof(ParseDelegate), parseMethodInfo);
+				parseDelegate = (ParseDelegate)parseMethodInfo.CreateDelegate(typeof(ParseDelegate));
 			}
 			catch (ArgumentException)
 			{
 				//Try wrapping strongly-typed return with wrapper fn.
-				var typedParseDelegate = (Func<string, T>)Delegate.CreateDelegate(typeof(Func<string, T>), parseMethodInfo);
+				var typedParseDelegate = (Func<string, T>)parseMethodInfo.CreateDelegate(typeof(Func<string, T>));
 				parseDelegate = x => typedParseDelegate(x);
 			}
 			if (parseDelegate != null)
@@ -83,21 +90,27 @@ namespace ServiceStack.Text.Common
 		public static ParseStringDelegate GetParseFn()
 		{
 			// Get the static Parse(string) method on the type supplied
-			var parseMethodInfo = typeof(T).GetMethod(
-				ParseMethod, BindingFlags.Public | BindingFlags.Static, null,
-				new[] { typeof(string) }, null);
+            var parseMethodInfo = typeof(T).GetTypeInfo()
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(m => m.Name == ParseMethod)
+                .Where(m =>
+                {
+                    var p = m.GetParameters();
+                    return p.Length == 1 && p[0].ParameterType == typeof(string);
+                })
+                .FirstOrDefault();
 
 			if (parseMethodInfo == null) return null;
 
 			ParseDelegate parseDelegate;
 			try
 			{
-				parseDelegate = (ParseDelegate)Delegate.CreateDelegate(typeof(ParseDelegate), parseMethodInfo);
+				parseDelegate = (ParseDelegate)parseMethodInfo.CreateDelegate(typeof(ParseDelegate));
 			}
 			catch (ArgumentException)
 			{
 				//Try wrapping strongly-typed return with wrapper fn.
-				var typedParseDelegate = (Func<string, T>)Delegate.CreateDelegate(typeof(Func<string, T>), parseMethodInfo);
+				var typedParseDelegate = (Func<string, T>)parseMethodInfo.CreateDelegate(typeof(Func<string, T>));
 				parseDelegate = x => typedParseDelegate(x);
 			}
 			if (parseDelegate != null)

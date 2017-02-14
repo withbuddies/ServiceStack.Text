@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace ServiceStack.Text.Controller
 {
@@ -46,7 +47,7 @@ namespace ServiceStack.Text.Controller
 
 			var methodName = pathInfo.ActionName;
 
-			var method = context.GetType().GetMethods().First(
+			var method = context.GetType().GetTypeInfo().GetMethods().First(
 				c => c.Name == methodName && c.GetParameters().Count() == pathInfo.Arguments.Count);
 
 			var methodParamTypes = method.GetParameters().Select(x => x.ParameterType);

@@ -33,7 +33,8 @@ namespace ServiceStack.Text.Common
 		{
 			var type = typeConfig.Type;
 
-			if (!type.IsClass || type.IsAbstract || type.IsInterface) return null;
+            var info = type.GetTypeInfo();
+			if (!info.IsClass || info.IsAbstract || info.IsInterface) return null;
 
 			var propertyInfos = type.GetSerializableProperties();
 			if (propertyInfos.Length == 0)
@@ -44,7 +45,7 @@ namespace ServiceStack.Text.Common
 
 			var map = new Dictionary<string, TypeAccessor>(StringComparer.OrdinalIgnoreCase);
 
-			var isDataContract = type.GetCustomAttributes(typeof(DataContractAttribute), false).Any();
+			var isDataContract = type.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), false).Any();
 
 			foreach (var propertyInfo in propertyInfos)
 			{
@@ -100,7 +101,7 @@ namespace ServiceStack.Text.Common
 
 		public static object ParseAbstractType<T>(string value)
 		{
-			if (typeof(T).IsAbstract)
+			if (typeof(T).GetTypeInfo().IsAbstract)
 			{
 				if (string.IsNullOrEmpty(value)) return null;
 				var concreteType = ExtractType(value);
@@ -158,7 +159,7 @@ namespace ServiceStack.Text.Common
 			{
 				//TODO: What string comparison is used in SST?
 				var fieldName = string.Format("<{0}>i__Field", propertyInfo.Name);
-				var fieldInfos = typeConfig.Type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
+				var fieldInfos = typeConfig.Type.GetTypeInfo().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
 				foreach (var f in fieldInfos)
 				{
 					if (f.IsInitOnly && f.FieldType == propertyInfo.PropertyType && f.Name == fieldName)
@@ -201,7 +202,7 @@ namespace ServiceStack.Text.Common
 			generator.Emit(OpCodes.Castclass, propertyInfo.DeclaringType);
 			generator.Emit(OpCodes.Ldarg_1);
 
-			generator.Emit(propertyInfo.PropertyType.IsClass
+			generator.Emit(propertyInfo.PropertyType.GetTypeInfo().IsClass
 				? OpCodes.Castclass
 				: OpCodes.Unbox_Any,
 				propertyInfo.PropertyType);
@@ -221,7 +222,7 @@ namespace ServiceStack.Text.Common
 			generator.Emit(OpCodes.Castclass, fieldInfo.DeclaringType);
 			generator.Emit(OpCodes.Ldarg_1);
 
-			generator.Emit(fieldInfo.FieldType.IsClass
+			generator.Emit(fieldInfo.FieldType.GetTypeInfo().IsClass
 				? OpCodes.Castclass
 				: OpCodes.Unbox_Any,
 				fieldInfo.FieldType);
@@ -238,7 +239,7 @@ namespace ServiceStack.Text.Common
 			var name = string.Format("_{0}{1}_", "Set", memberInfo.Name);
 			var returnType = typeof(void);
 
-			return !memberInfo.DeclaringType.IsInterface
+			return !memberInfo.DeclaringType.GetTypeInfo().IsInterface
 				? new DynamicMethod(name, returnType, args, memberInfo.DeclaringType, true)
 				: new DynamicMethod(name, returnType, args, memberInfo.Module, true);
 		}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using ServiceStack.Text.Json;
 
 namespace ServiceStack.Text.Common
@@ -52,7 +53,7 @@ namespace ServiceStack.Text.Common
 					else
 					{
 						//If __type info doesn't match, ignore it.
-						if (!type.IsInstanceOfType(instance))
+						if (!type.GetTypeInfo().IsInstanceOfType(instance))
 							instance = null;
 					}
 

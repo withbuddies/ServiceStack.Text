@@ -32,7 +32,7 @@ namespace ServiceStack.Text
 
             var genericType = typeof(TranslateListWithElements<>).MakeGenericType(elementType);
             var mi = genericType.GetMethod("LateBoundTranslateToGenericICollection", BindingFlags.Static | BindingFlags.Public);
-            translateToFn = (ConvertInstanceDelegate)Delegate.CreateDelegate(typeof(ConvertInstanceDelegate), mi);
+            translateToFn = (ConvertInstanceDelegate)mi.CreateDelegate(typeof(ConvertInstanceDelegate));
 
             Dictionary<Type, ConvertInstanceDelegate> snapshot, newCache;
             do
@@ -60,7 +60,7 @@ namespace ServiceStack.Text
             var toElementType = toInstanceOfType.GetGenericType().GetGenericArguments()[0];
             var genericType = typeof(TranslateListWithConvertibleElements<,>).MakeGenericType(fromElementType, toElementType);
             var mi = genericType.GetMethod("LateBoundTranslateToGenericICollection", BindingFlags.Static | BindingFlags.Public);
-            translateToFn = (ConvertInstanceDelegate)Delegate.CreateDelegate(typeof(ConvertInstanceDelegate), mi);
+            translateToFn = (ConvertInstanceDelegate)mi.CreateDelegate(typeof(ConvertInstanceDelegate));
 
             Dictionary<ConvertibleTypeKey, ConvertInstanceDelegate> snapshot, newCache;
             do
@@ -144,7 +144,7 @@ namespace ServiceStack.Text
 	{
 		public static object CreateInstance(Type toInstanceOfType)
 		{
-			if (toInstanceOfType.IsGenericType)
+			if (toInstanceOfType.IsGenericType())
 			{
 				if (toInstanceOfType.HasAnyTypeDefinitionsOf(
 					typeof(ICollection<>), typeof(IList<>)))

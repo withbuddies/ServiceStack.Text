@@ -37,8 +37,8 @@ namespace ServiceStack.Text
 
                 var genericType = typeof(QueryStringWriter<>).MakeGenericType(type);
                 var mi = genericType.GetMethod("WriteFn", BindingFlags.NonPublic | BindingFlags.Static);
-                var writeFactoryFn = (Func<WriteObjectDelegate>)Delegate.CreateDelegate(
-                    typeof(Func<WriteObjectDelegate>), mi);
+                var writeFactoryFn = (Func<WriteObjectDelegate>)mi.CreateDelegate(
+                    typeof(Func<WriteObjectDelegate>));
                 writeFn = writeFactoryFn();
 
                 Dictionary<Type, WriteObjectDelegate> snapshot, newCache;
@@ -104,7 +104,8 @@ namespace ServiceStack.Text
 			}
 			else
 			{
-				if (typeof(T).IsClass || typeof(T).IsInterface)
+                var info = typeof(T).GetTypeInfo();
+				if (info.IsClass || info.IsInterface)
 				{
 					var canWriteType = WriteType<T, JsvTypeSerializer>.Write;
 					if (canWriteType != null)

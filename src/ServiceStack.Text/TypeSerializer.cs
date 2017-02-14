@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using ServiceStack.Text.Common;
 using ServiceStack.Text.Jsv;
@@ -79,16 +80,17 @@ namespace ServiceStack.Text
 		{
 			if (value == null) return null;
 			if (typeof(T) == typeof(string)) return value as string;
-            if (typeof(T) == typeof(object) || typeof(T).IsAbstract || typeof(T).IsInterface)
+            var info = typeof(T).GetTypeInfo();
+            if (typeof(T) == typeof(object) || info.IsAbstract || info.IsInterface)
             {
-                if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = true;
+                if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = true;
                 try
                 {
                     return SerializeToString(value, value.GetType());
                 }
                 finally
                 {
-                    if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                    if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = false;
                 }
             }
 
@@ -123,14 +125,15 @@ namespace ServiceStack.Text
 			}
 			if (typeof(T) == typeof(object))
 			{
-                if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = true;
+                var info = typeof(T).GetTypeInfo();
+                if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = true;
                 try
                 {
                     SerializeToWriter(value, value.GetType(), writer);
                 }
                 finally
                 {
-                    if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                    if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = false;
                 }
                 return;
 			}
@@ -155,14 +158,15 @@ namespace ServiceStack.Text
 			if (value == null) return;
 			if (typeof(T) == typeof(object))
 			{
-                if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = true;
+                var info = typeof(T).GetTypeInfo();
+                if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = true;
                 try
                 {
                     SerializeToStream(value, value.GetType(), stream);
                 }
                 finally
                 {
-                    if (typeof(T).IsAbstract || typeof(T).IsInterface) JsState.IsWritingDynamic = false;
+                    if (info.IsAbstract || info.IsInterface) JsState.IsWritingDynamic = false;
                 }
                 return;
 			}

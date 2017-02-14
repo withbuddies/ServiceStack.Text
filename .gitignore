@@ -41,3 +41,7 @@ App_Data/
 *.resharper.user
 *.suo
 *.user
+
+*.lock.json
+.vs/
+*.nupkg

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.Serialization;
 using ServiceStack.Text.Jsv;
 
@@ -50,7 +51,7 @@ namespace ServiceStack.Text.Common
 					else
 					{
 						//If __type info doesn't match, ignore it.
-						if (!type.IsInstanceOfType(instance))
+						if (!type.GetTypeInfo().IsInstanceOfType(instance))
 							instance = null;
 					}
 

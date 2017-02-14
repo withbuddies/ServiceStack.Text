@@ -33,7 +33,7 @@ namespace ServiceStack.Text.Json
 
             var genericType = typeof(JsonReader<>).MakeGenericType(type);
             var mi = genericType.GetMethod("GetParseFn", BindingFlags.Public | BindingFlags.Static);
-            parseFactoryFn = (ParseFactoryDelegate)Delegate.CreateDelegate(typeof(ParseFactoryDelegate), mi);
+            parseFactoryFn = (ParseFactoryDelegate)mi.CreateDelegate(typeof(ParseFactoryDelegate));
 
             Dictionary<Type, ParseFactoryDelegate> snapshot, newCache;
             do
@@ -67,7 +67,8 @@ namespace ServiceStack.Text.Json
 		{
 			if (ReadFn == null)
 			{
-                if (typeof(T).IsAbstract || typeof(T).IsInterface)
+                var info = typeof(T).GetTypeInfo();
+                if (info.IsAbstract || info.IsInterface)
 				{
 					if (string.IsNullOrEmpty(value)) return null;
 					var concreteType = DeserializeType<JsonTypeSerializer>.ExtractType(value);

@@ -150,6 +150,7 @@
     <Compile Include="Controller\PathInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CoreClrHacks.cs" />
     <Compile Include="CsvConfig.cs">
       <SubType>Code</SubType>
     </Compile>

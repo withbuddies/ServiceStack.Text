@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using ServiceStack.Text.Common;
 using ServiceStack.Text.Reflection;
 
@@ -82,7 +83,7 @@ namespace ServiceStack.Text
 
 			if (records == null) return rows;
 
-			if (typeof(T).IsValueType || typeof(T) == typeof(string))
+			if (typeof(T).GetTypeInfo().IsValueType || typeof(T) == typeof(string))
 			{
 				rows.Add(GetSingleRow(records, typeof(T)));
 				return rows;
@@ -141,7 +142,7 @@ namespace ServiceStack.Text
 
 			if (records == null) return;
 
-			if (typeof(T).IsValueType || typeof(T) == typeof(string))
+			if (typeof(T).GetTypeInfo().IsValueType || typeof(T) == typeof(string))
 			{
 				var singleRow = GetSingleRow(records, typeof(T));
 				WriteRow(writer, singleRow);

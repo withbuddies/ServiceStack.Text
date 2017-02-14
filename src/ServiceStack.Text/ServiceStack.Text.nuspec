@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ServiceStack.Text-Scopely</id>
+    <version>3.7.0</version>
+    <title>ServiceStack.Text-Scopely</title>
+    <authors>Service Stack</authors>
+    <licenseUrl>https://servicestack.net/terms</licenseUrl>
+    <projectUrl>https://github.com/withbuddies/ServiceStack.Text</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Scopely's fork of ServiceStack.Text.</description>
+    <releaseNotes>.NET Core port</releaseNotes>
+    <copyright></copyright>
+    <tags>json</tags>
+    <dependencies>
+      <group targetFramework="netstandard1.6">
+        <dependency id="System.Collections.NonGeneric" version="4.0.1" />
+        <dependency id="System.Collections.Specialized" version="4.0.1" />
+        <dependency id="System.Reflection" version="4.1.0" />
+        <dependency id="System.Reflection.Emit" version="4.0.1" />
+        <dependency id="System.Reflection.Emit.ILGeneration" version="4.0.1" />
+        <dependency id="System.Reflection.Emit.Lightweight" version="4.0.1" />
+        <dependency id="System.Runtime.Loader" version="4.0.0" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.1.1" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.1.1" />
+        <dependency id="Microsoft.Extensions.DependencyModel" version="1.0.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\net35\ServiceStack.Text.dll" target="lib\net35\ServiceStack.Text.dll" />
+    <file src="bin\Release\netstandard1.6\ServiceStack.Text.dll" target="lib\netstandard1.6\ServiceStack.Text.dll" />
+  </files>
+</package>
