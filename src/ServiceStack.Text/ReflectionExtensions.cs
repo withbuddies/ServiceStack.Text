@@ -203,7 +203,7 @@ namespace ServiceStack.Text
 
 		public static bool HasAnyTypeDefinitionsOf(this Type genericType, params Type[] theseGenericTypes)
 		{
-			if (!genericType.IsGenericType()) return false;
+			if (!genericType.GetTypeInfo().IsGenericType) return false;
 			var genericTypeDefinition = genericType.GetGenericTypeDefinition();
 
 			foreach (var thisGenericType in theseGenericTypes)
