@@ -54,7 +54,7 @@ namespace ServiceStack.Text.Tests.Utils
 			Assert.That(longDateTimeString, Is.EqualTo(DateTimeSerializer.ToShortestXsdDateTimeString(longDateTime)));
 		}
 
-		[Test][Ignore]
+		[Test][Ignore("unknown")]
 		public void Utc_Local_Equals()
 		{
 			var now = DateTime.Now;

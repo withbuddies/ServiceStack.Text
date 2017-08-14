@@ -9,7 +9,7 @@ using ServiceStack.Text.Tests.JsonTests;
 
 namespace ServiceStack.Text.Tests.Support
 {
-	[Ignore]
+	[Ignore("unknown")]
 	[TestFixture]
 	public class BenchmarkTests
 		: PerfTestBase

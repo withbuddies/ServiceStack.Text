@@ -61,6 +61,7 @@ namespace System
             => Delegate.CreateDelegate(delegateType, method);
     }
 }
+#if NET35
 namespace System.Reflection
 {
     internal static class TypeExtensions
@@ -68,4 +69,5 @@ namespace System.Reflection
         public static Type GetTypeInfo(this Type type) => type;
     }
 }
+#endif
 #endif
