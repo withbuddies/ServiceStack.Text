@@ -336,17 +336,11 @@ namespace ServiceStack.Text
 #endif
 			}
 
-#if SILVERLIGHT || XBOX
-			return () => Activator.CreateInstance(type);
-#else
-#if CORE_CLR
-            // todo - in a future version this should be supported
-            //return () => RuntimeHelpers.GetUninitializedObject(type);
-            return () => Activator.CreateInstance(type);
+#if SILVERLIGHT || XBOX || CORE_CLR
+            return () => throw new JsonSerializationException($"{type.Name} can't be deserialized because it needs a parameterless constructor");
 #else
             //Anonymous types don't have empty constructors
             return () => FormatterServices.GetUninitializedObject(type);
-#endif
 #endif
         }
 

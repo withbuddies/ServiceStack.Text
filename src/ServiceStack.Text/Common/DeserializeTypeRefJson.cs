@@ -92,7 +92,7 @@ namespace ServiceStack.Text.Common
 
 						continue;
 					}
-					catch
+					catch (Exception e) when (!(e is JsonSerializationException))
 					{
 						Tracer.Instance.WriteWarning("WARN: failed to set dynamic property {0} with: {1}", propertyName, propertyValueStr);
 					}
@@ -105,7 +105,7 @@ namespace ServiceStack.Text.Common
 						var propertyValue = typeAccessor.GetProperty(propertyValueStr);
 						typeAccessor.SetProperty(instance, propertyValue);
 					}
-					catch
+					catch (Exception e) when (!(e is JsonSerializationException))
 					{
 						Tracer.Instance.WriteWarning("WARN: failed to set property {0} with: {1}", propertyName, propertyValueStr);
 					}
