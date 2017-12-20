@@ -318,7 +318,8 @@ namespace ServiceStack.Text
 
 		public static EmptyCtorDelegate GetConstructorMethodToCache(Type type)
 		{
-			var emptyCtor = type.GetTypeInfo().GetConstructor(Type.EmptyTypes);
+            var emptyCtor = type.GetTypeInfo().GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .FirstOrDefault(c => c.GetParameters().Length == 0);
 			if (emptyCtor != null)
 			{
 
@@ -347,7 +348,7 @@ namespace ServiceStack.Text
             return () => FormatterServices.GetUninitializedObject(type);
 #endif
 #endif
-		}
+        }
 
 		private static class TypeMeta<T>
 		{
