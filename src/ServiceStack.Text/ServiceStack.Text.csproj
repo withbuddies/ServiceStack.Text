@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <VersionPrefix>3.7.1</VersionPrefix>
-    <TargetFrameworks>net35;net45;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
     <AssemblyName>ServiceStack.Text</AssemblyName>
     <PackageId>ServiceStack.Text</PackageId>
     <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
