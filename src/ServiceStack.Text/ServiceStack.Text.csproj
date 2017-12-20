@@ -4,7 +4,7 @@
     <VersionPrefix>3.7.1</VersionPrefix>
     <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
     <AssemblyName>ServiceStack.Text</AssemblyName>
-    <PackageId>ServiceStack.Text</PackageId>
+    <PackageId>ServiceStack.Text-Scopely</PackageId>
     <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
