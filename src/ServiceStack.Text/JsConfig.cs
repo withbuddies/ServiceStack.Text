@@ -57,10 +57,31 @@ namespace ServiceStack.Text
 			}
 			set
 			{
-				if (!tsIncludeNullValues.HasValue) tsIncludeNullValues = value;
 				if (!sIncludeNullValues.HasValue) sIncludeNullValues = value;
 			}
 		}
+
+        private class ResetIncludeNullVaulesScope : IDisposable
+        {
+            readonly bool? _oldState;
+
+            public ResetIncludeNullVaulesScope(bool? oldState)
+            {
+                _oldState = oldState;
+            }
+
+            public void Dispose()
+            {
+                tsIncludeNullValues = _oldState;
+            }
+        }
+
+        public static IDisposable OpenIncludeNullValuesScope(bool includeNullValues)
+        {
+            var result = new ResetIncludeNullVaulesScope(tsIncludeNullValues);
+            tsIncludeNullValues = includeNullValues;
+            return result;
+        }
 
 		[ThreadStatic]
 		private static bool? tsExcludeTypeInfo;
@@ -123,7 +144,7 @@ namespace ServiceStack.Text
 		public static void Reset()
 		{
 			tsConvertObjectTypesIntoStringDictionary = sConvertObjectTypesIntoStringDictionary = null;
-			tsIncludeNullValues = sIncludeNullValues = null;
+			sIncludeNullValues = null;
 			tsExcludeTypeInfo = sExcludeTypeInfo = null;
 			tsEmitCamelCaseNames = sEmitCamelCaseNames = null;
 			tsDateHandler = sDateHandler = null;
