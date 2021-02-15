@@ -149,8 +149,8 @@ namespace ServiceStack.Text.Common
 
 			if (type == typeof(string[]))
 				return ParseStringArray;
-			//if (type == typeof(byte[]))
-			//	return ParseByteArray;
+			if (type == typeof(byte[]))
+				return GetByteArrayParser();
 
 			var elementType = type.GetElementType();
 			var elementParseFn = Serializer.GetParseFn(elementType);
@@ -169,14 +169,38 @@ namespace ServiceStack.Text.Common
 					? new string[0]
 					: DeserializeListWithElements<TSerializer>.ParseStringList(value).ToArray();
 		}
-		
-		public static byte[] ParseByteArray(string value)
+
+		static bool IsBase64Char(char c)
+			=> 'A' <= c && c <= 'Z'
+			|| 'a' <= c && c <= 'z'
+			|| '0' <= c && c <= '0'
+			|| c == '/'
+			|| c == '+';
+
+		static ParseStringDelegate GetByteArrayParser()
 		{
-			if ((value = DeserializeListWithElements<TSerializer>.StripList(value)) == null) return null;
-			if ((value = Serializer.ParseRawString(value)) == null) return null;
-			return value == string.Empty
-			       	? new byte[0]
-			       	: Convert.FromBase64String(value);
+			var backupElementParser = Serializer.GetParseFn(typeof(byte));
+			var backupParser = DeserializeArrayWithElements<TSerializer>.GetParseFn(typeof(byte));
+			object ParseByteArray(string value)
+			{
+				if (value != null)
+				{
+					if (value.Length == 0)
+					{
+	#if NETSTANDARD
+						return Array.Empty<byte>();
+	#else
+						return new byte[0];
+	#endif
+					}
+					if (IsBase64Char(value[0]))
+					{
+						return Convert.FromBase64String(value);
+					}
+				}
+				return backupParser(value, backupElementParser);
+			}
+			return ParseByteArray;
 		}
 	}
 }
