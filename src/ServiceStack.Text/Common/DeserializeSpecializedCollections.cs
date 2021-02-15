@@ -49,7 +49,7 @@ namespace ServiceStack.Text.Common
 #if !SILVERLIGHT
 			if (typeof(T) == typeof(StringCollection))
 			{
-				return ParseStringCollection<TSerializer>;
+				return ParseStringCollection;
 			}
 #endif
 
@@ -69,7 +69,7 @@ namespace ServiceStack.Text.Common
 		}
 
 #if !SILVERLIGHT
-		public static StringCollection ParseStringCollection<TSerializer>(string value) where TSerializer : ITypeSerializer
+		public static StringCollection ParseStringCollection(string value)
 		{
 			if ((value = DeserializeListWithElements<TSerializer>.StripList(value)) == null) return null;
 			return value == String.Empty
